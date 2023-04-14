@@ -1,10 +1,7 @@
-const readline = require("readline");
 const fs = require("fs");
 const crypto = require("crypto");
-const { Readable } = require("stream");
-const path = require("path");
 const log = require("./log");
-
+const { app } = require('electron');
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -26,7 +23,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName = path.join(__dirname, "passwordo");
+  encryptedFileName =app.getPath('userData')+"passwordo.aes256g";
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();

@@ -1,8 +1,5 @@
 // main.js
 const { app, ipcMain, Menu } = require("electron");
-
-
-
 const { SingleWindow } = require("./com/WindowMgr");
 
 // 应用程序启动时创建窗口
