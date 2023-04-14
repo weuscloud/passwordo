@@ -1,0 +1,161 @@
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+}
+.row.header {
+  border-radius: 0;
+  height: 54px;
+}
+body {
+  background-color: #f5f5f5;
+  margin: 0;
+}
+.header {
+  font-weight: bold;
+  color: #fff;
+  background-color: #40a9ff;
+  position: sticky; /* 设置表头为 sticky 定位 */
+  top: 0; /* 将表头固定在页面顶部 */
+  z-index: 1; /* 确保表头在上层 */
+
+}
+
+.col {
+  padding: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.uid {
+  min-width: 90px;
+}
+
+.tips {
+  font-size: 14px;
+  width: 200px;
+  flex: 1;
+}
+.account {
+  width: 200px;
+}
+.password {
+  width: 200px;
+}
+.action {
+  min-width: 80px;
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  box-sizing: border-box;
+  padding: 10px;
+  position: relative; /* 设置容器相对定位 */
+}
+.container input {
+  font-size: 16px; /* 设置输入框的字体大小 */
+  border: 1px solid #ccc; /* 设置输入框的边框样式 */
+
+  box-sizing: border-box; /* 设置输入框的盒模型 */
+}
+
+button {
+  background-color: #fff;
+  border-color: #fff;
+  color: #40a9ff;
+  border: 0;
+  font-size: 20px;
+  width: 100%;
+}
+button:hover {
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #fa541c;
+}
+
+.titlebar {
+  flex: 1;
+  text-align: center;
+}
+#top-header {
+  margin: 0;
+  padding-top: 10px;
+}
+#top-header button {
+  border-radius: 20px;
+}
+.helper {
+  box-sizing: border-box;
+}
+
+.modal.close {
+  display: none;
+}
+.modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: block;
+  z-index: 2;
+}
+.form-container {
+  min-width: 300px;
+  background-color: #40a9ff;
+  border-radius: 4px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+#account-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+}
+.form-container div {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding: 8px;
+  display: flex;
+  border-radius: 6px;
+  justify-content: space-between;
+}
+.form-container input {
+  border: 1px solid #40a9ff;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.modal-container {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1;
+  position: relative;
+}
+button{
+  cursor: pointer;
+}
+.modal-btn button{
+width: 100%;
+padding: 0;
+}
+.modal-btn button:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.modal-btn button:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
