@@ -1,12 +1,9 @@
 // main.js
-const { app, ipcMain, Menu, globalShortcut } = require("electron");
+const { app, ipcMain, Menu } = require("electron");
 
 
 
-// 处于生产环境
-// 禁用所有的快捷键
-
-const { SingleWindow } = require("./com/mWindowMgr");
+const { SingleWindow } = require("./com/WindowMgr");
 
 // 应用程序启动时创建窗口
 app.on("ready", () => {
@@ -14,7 +11,7 @@ app.on("ready", () => {
   //createMainWindow();
   //globalShortcut.unregisterAll();
   // 隐藏菜单栏和禁用快捷键
-  Menu.setApplicationMenu(null);
+  //Menu.setApplicationMenu(null);
   SingleWindow("login");
 });
 
@@ -25,10 +22,10 @@ ipcMain.on("go-to", (event, pageName) => {
   }
 });
 //login
-require("./modules/page.login");
+require("./com/page.login");
 
 //manage
-require("./modules/page.manage");
+require("./com/page.manage");
 
 //main
-require("./modules/page.main");
+require("./com/page.main");

@@ -1,7 +1,6 @@
-const { ipcMain } = require("electron");
-const { clipboard } = require("electron");
-const { sendMessage } = require("../com/mWindowMgr");
-const AccountManager = require("../com/AccountManager");
+const { ipcMain,clipboard } = require("electron");
+const { sendMessage } = require("./WindowMgr");
+const AccountManager = require("./AccountManager");
 
 ipcMain.on("query-uid", (e, a) => {
   sendMessage(

@@ -34,6 +34,7 @@ class Notification {
       this.createContainer();
     }
     this.container.innerText = message;
+    
     switch (type) {
       case 'warning':
         this.container.style.backgroundColor = '#ffa500';

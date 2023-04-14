@@ -2,7 +2,9 @@ const readline = require("readline");
 const fs = require("fs");
 const crypto = require("crypto");
 const { Readable } = require("stream");
-const path=require("path");
+const path = require("path");
+const log = require("./log");
+
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -24,7 +26,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName = path.join(__dirname,"passwordo");
+  encryptedFileName = path.join(__dirname, "passwordo");
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();
@@ -46,7 +48,7 @@ class AccountManager {
       decipher.final();
       return true;
     } catch (error) {
-      console.error("login failed!");
+      log("login failed!");
       return false;
     }
   }
@@ -68,62 +70,60 @@ class AccountManager {
       const lines = inputStr.split(/\r?\n/);
 
       for (const line of lines) {
-        if (
-          line.startsWith("uid=")
-        ) {
+        if (line.startsWith("uid=")) {
           //处理uid
           let uid = line.substring(
             line.indexOf("uid=") + 4,
             line.indexOf(",", line.indexOf("uid="))
           );
-          if(line.indexOf("uid=")<0)uid="";
-          
+          if (line.indexOf("uid=") < 0) uid = "";
+
           let account = line.substring(
             line.indexOf("acc=") + 4,
             line.indexOf(",", line.indexOf("acc="))
           );
-          if(line.indexOf("acc=")<0)account="";
+          if (line.indexOf("acc=") < 0) account = "";
 
           let tips = line.substring(
             line.indexOf("tips=") + 5,
             line.indexOf(",", line.indexOf("tips="))
           );
-          if(line.indexOf("tips=")<0)tips="";
+          if (line.indexOf("tips=") < 0) tips = "";
 
           let password = line.substring(
             line.indexOf("pwd=") + 4,
             line.indexOf(";", line.indexOf("pwd="))
           );
-          if(line.indexOf("pwd=")<0)password="";
-          
+          if (line.indexOf("pwd=") < 0) password = "";
+
           this.accounts.push({ uid, account, tips, password });
         }
       }
     } catch (error) {
-      console.log("decrypted failed!\n", error);
+      log("decrypted failed!\n", error);
     }
   }
   // 添加账号
   addAccount({ uid, account, password, tips }) {
     // 验证参数
     if (!this.validateUid(uid)) {
-      console.log("Invalid uid", uid);
+      log("Invalid uid", uid);
       return "Invalid uid";
     }
     if (!this.validateAccount(account)) {
-      console.log("Invalid account", uid);
+      log("Invalid account", uid);
       return "Invalid account";
     }
     if (!this.validatePassword(password)) {
-      console.log("Invalid password", uid);
+      log("Invalid password", uid);
       return "Invalid password";
     }
     if (!this.validTips(tips)) {
-      console.log("Invalid tips", uid);
+      log("Invalid tips", uid);
       return "Invalid tips";
     }
     if (this.findAccount(uid)) {
-      console.log("Account existed", uid);
+      log("Account existed", uid);
       return "Account existed";
     }
     // 创建账号对象并添加到数组中
@@ -133,26 +133,26 @@ class AccountManager {
     return "OK";
   }
   storeToFile() {
-    let filepath=this.encryptedFileName;
+    let filepath = this.encryptedFileName;
     try {
       // 检查文件是否存在
       fs.accessSync(filepath, fs.constants.F_OK);
-  
+
       // 文件存在，什么也不做
-      console.log('File already exists:', filepath);
+      log("File already exists:", filepath);
     } catch (error) {
       // 文件不存在，尝试创建文件
       try {
-        fs.writeFileSync(filepath, '');
-        console.log('File created successfully:', filepath);
+        fs.writeFileSync(filepath, "");
+        log("File created successfully:", filepath);
       } catch (error) {
         // 权限不足，退出
-        console.error('Failed to create file:', error);
+        log("Failed to create file:", error);
         return false;
       }
     }
     if (!global.login.passwordHash === true) return false;
-    let data="";
+    let data = "";
     for (const acc of this.accounts) {
       if (
         !this.validateUid(acc.uid) ||
@@ -173,7 +173,7 @@ class AccountManager {
     }
     const encrypted = encrypt(data, key);
     try {
-      fs.writeFile(this.encryptedFileName, encrypted,{flag: 'w'}, (err) => {
+      fs.writeFile(this.encryptedFileName, encrypted, { flag: "w" }, (err) => {
         if (err) throw err;
       });
     } catch (error) {
@@ -187,13 +187,13 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      console.log("Account not found");
+      log("Account not found");
       return false;
     }
 
     // 从数组中删除账号对象
     this.accounts.splice(index, 1);
-    console.log("Account deleted:", uid);
+    log("Account deleted:", uid);
     return true;
   }
   //同时更新账号和密码
@@ -201,28 +201,28 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      console.log("Account not found", uid);
+      log("Account not found", uid);
       return "Account not found";
     }
 
     // 验证新密码是否符合要求
     if (!this.validatePassword(password)) {
-      console.log("Invalid password for", uid);
+      log("Invalid password for", uid);
       return "Invalid password for";
     }
     // 验证新账号名是否符合要求
     if (!this.validateAccount(account)) {
-      console.log("Invalid account for", uid);
+      log("Invalid account for", uid);
       return "Invalid account for";
     }
     if (!this.validTips(tips)) {
-      console.log("Invalid tips for", uid);
+      log("Invalid tips for", uid);
       return "Invalid tips for";
     }
     this.accounts[index].account = account;
     this.accounts[index].password = password;
     this.accounts[index].tips = tips;
-    console.log("Password and Account updated for ", uid);
+    log("Password and Account updated for ", uid);
     return "OK";
   }
   // 更新账号密码
@@ -230,19 +230,19 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      console.log("Account not found", uid);
+      log("Account not found", uid);
       return false;
     }
 
     // 验证新密码是否符合要求
     if (!this.validatePassword(newPassword)) {
-      console.log("Invalid password", uid);
+      log("Invalid password", uid);
       return false;
     }
 
     // 更新账号密码
     this.accounts[index].password = newPassword;
-    console.log("Password updated for account", uid);
+    log("Password updated for account", uid);
     return true;
   }
   //更新账号名
@@ -250,47 +250,47 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      console.log("Account not found", uid);
+      log("Account not found", uid);
       return false;
     }
 
     // 验证新账号名是否符合要求
     if (!this.validateAccount(newAccount)) {
-      console.log("Invalid account", uid);
+      log("Invalid account", uid);
       return false;
     }
 
     // 更新账号名
     this.accounts[index].account = newAccount;
-    console.log("Password updated for account", uid);
+    log("Password updated for account", uid);
     return true;
   }
   updateTips(uid, newTips) {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      console.log("Account not found", uid);
+      log("Account not found", uid);
       return false;
     }
     // 验证新账号名是否符合要求
     if (!this.validTips(newTips)) {
-      console.log("Invalid Tips", uid);
+      log("Invalid Tips", uid);
       return false;
     }
     // 更新账号名
     this.accounts[index].tips = newTips;
-    console.log("Tips updated for account", uid);
+    log("Tips updated for account", uid);
     return true;
   }
   // 查找账号
   findAccount(uid) {
     const account = this.accounts.find((account) => account.uid === uid);
     if (!account) {
-      console.log("Account not found");
+      log("Account not found");
       return null;
     }
 
-    console.log("Account found:", account.uid);
+    log("Account found:", account.uid);
     return account;
   }
 

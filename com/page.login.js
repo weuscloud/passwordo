@@ -1,6 +1,6 @@
 const { ipcMain } = require("electron");
-const AccountManager = require("../com/AccountManager");
-const { sendMessage, SingleWindow, onClose } = require("../com/mWindowMgr");
+const AccountManager = require("./AccountManager");
+const { sendMessage, SingleWindow, onClose } = require("./WindowMgr");
 const crypto = require("crypto");
 // 接收登录请求
 ipcMain.on("login-form-submission", (event, arg) => {

@@ -1,6 +1,5 @@
-node_modules
-/data/
-.vscode
+/node_modules/
 *.sh
-*.cmd
-/dist
+/data/
+/dist/
+/.vscode/

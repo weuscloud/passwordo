@@ -1,4 +1,4 @@
-const Notification = require("../../com/notification");
+const Notification = require("../com/notification");
 const { ipcRenderer } = require("electron");
 const { throttle, debounce } = require("../../com/throttle");
 
@@ -278,8 +278,8 @@ ipcRenderer.on("create-account-reply", (event, arg) => {
   const { success, uid, message } = arg;
   if (success === true) {
     Notification.getInstance().show("创建" + uid + "成功!", "normal");
-    console.log(arg)
     addRow(arg);
+    toggleModal();
   } else {
     Notification.getInstance().show(
       "创建" + uid + "失败!\n" + message,

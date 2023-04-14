@@ -1,9 +1,9 @@
 // renderer.js
 const { ipcRenderer } = require("electron");
-const loginForm = document.getElementById("login-form");
-const Notification = require("../../com/notification");
+const Notification = require("../com/notification");
 const { throttle } = require("../../com/throttle");
-
+const log = require("../../com/log");
+const loginForm = document.getElementById("login-form");
 loginForm.addEventListener(
   "submit",
   throttle((event) => {
@@ -15,6 +15,5 @@ loginForm.addEventListener(
 );
 ipcRenderer.on("login-error", (event, arg) => {
   const { success, message } = arg;
-  console.log(arg);
   Notification.getInstance().show(message, "error");
 });

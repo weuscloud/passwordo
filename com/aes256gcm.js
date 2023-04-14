@@ -1,6 +1,6 @@
 const fs = require("fs");
 const crypto = require("crypto");
-
+const log = require("./log");
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -31,7 +31,7 @@ function UnLock(filename, password) {
     try {
       const decrypted = decrypt(inputFile, key);
       fs.writeFileSync(outputFile, decrypted);
-      console.log("decrypted!");
+      log("decrypted!");
       return 0;
     } catch (error) {
       console.error("decrypt failed!");
@@ -76,7 +76,7 @@ function Lock(filename, password) {
     const outputFile = `${filename}.aes256g`;
     const encrypted = encrypt(inputFile, key);
     fs.writeFileSync(outputFile, encrypted);
-    console.log("encrypted!");
+    log("encrypted!");
     return 0;
   } catch (error) {
     console.error("encrypt failed!");

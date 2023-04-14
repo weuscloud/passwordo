@@ -1,9 +1,9 @@
 const { ipcRenderer } = require("electron");
 const { debounce } = require("../../com/throttle");
-const Notification = require("../../com/notification");
+const Notification = require("../com/notification");
 function addItems(content) {
   if (!content instanceof Array) {
-    console.log("load failed");
+    Notification.getInstance().show("Load failed");
     return;
   }
   //清空

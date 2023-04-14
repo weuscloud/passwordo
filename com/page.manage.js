@@ -1,6 +1,6 @@
-const { app, ipcMain, ipcRenderer } = require("electron");
-const AccountManager = require("../com/AccountManager");
-const { sendMessage } = require("../com/mWindowMgr");
+const { ipcMain } = require("electron");
+const AccountManager = require("./AccountManager");
+const { sendMessage } = require("./WindowMgr");
 //manage
 //查询
 ipcMain.on("query-account", () => {
