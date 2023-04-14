@@ -21,3 +21,9 @@ ipcMain.on("login-form-submission", (event, arg) => {
     SingleWindow("main");
   }
 });
+
+//重置账号
+ipcMain.on("reset-password", (e,a)=>{
+  const success=AccountManager.getInstance().deleteFile();
+  sendMessage("login","reset-password-reply",{success})
+});

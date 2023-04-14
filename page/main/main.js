@@ -3,7 +3,7 @@ const { debounce } = require("../../com/throttle");
 const Notification = require("../com/notification");
 function addItems(content) {
   if (!content instanceof Array) {
-    Notification.getInstance().show("Load failed");
+    Notification.getInstance().show("Load failed","error");
     return;
   }
   if(content.length==0)return;
@@ -108,7 +108,7 @@ ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
   const { success, isAccount,uid } = arg;
   let message="复制"+isAccount?"账号":"密码"+success?"成功":"失败"+"!\n"+uid;
   if (success === true) {
-    Notification.getInstance().show(message, "normal");
+    Notification.getInstance().show(message, "success");
   } else {
     Notification.getInstance().show(message, "warning");
   }

@@ -1,8 +1,8 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const log = require("./log");
-const { app } = require('electron');
-const path = require('path');
+const { app } = require("electron");
+const path = require("path");
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -24,7 +24,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName =path.join(app.getPath('userData'),"accounts");
+  encryptedFileName = path.join(app.getPath("userData"), "accounts");
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();
@@ -50,7 +50,16 @@ class AccountManager {
       return false;
     }
   }
-
+  deleteFile() {
+    try {
+      fs.unlink(this.encryptedFileName, (err) => {
+        if (err) throw err;
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
   readFromFile() {
     if (!fs.existsSync(this.encryptedFileName)) return;
     if (!global.login.passwordHash === true) return;
@@ -146,7 +155,7 @@ class AccountManager {
       } catch (error) {
         // 权限不足，退出
         log("Failed to create file:", error);
-        return "FILE ACCESS DENIED:\n"+filepath;
+        return "FILE ACCESS DENIED:\n" + filepath;
       }
     }
     if (!global.login.passwordHash === true) return "PASSWORD NOT EXISTED";
@@ -176,7 +185,7 @@ class AccountManager {
       });
     } catch (error) {
       log("WRITE FILE  DENIED");
-      return "WRITE FILE  DENIED:\n"+this.encryptedFileName;
+      return "WRITE FILE  DENIED:\n" + this.encryptedFileName;
     }
     return "OK";
   }
