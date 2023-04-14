@@ -52,13 +52,13 @@ class AccountManager {
   }
   deleteFile() {
     try {
-      fs.unlink(this.encryptedFileName, (err) => {
-        if (err) throw err;
-      });
-      return true;
+      // 检查文件是否存在
+      fs.accessSync(this.encryptedFileName, fs.constants.F_OK);
     } catch (error) {
       return false;
     }
+    fs.unlinkSync(this.encryptedFileName);
+    return true;
   }
   readFromFile() {
     if (!fs.existsSync(this.encryptedFileName)) return;

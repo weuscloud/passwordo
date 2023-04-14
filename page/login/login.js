@@ -17,7 +17,7 @@ loginForm.addEventListener(
 //重置功能
 loginForm.addEventListener(
   "click",
-  debounce((event) => {
+  throttle((event) => {
     const target = event.target;
     if (
       target.tagName.toLowerCase() === "button" &&
@@ -25,28 +25,19 @@ loginForm.addEventListener(
     ) {
       if (target.hasClicked === 1) {
         ipcRenderer.send("reset-password", "");
-      } else if (typeof target.hasClicked === "number") {
-        Notification
-          .getInstance()
-          .show(
-            "警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
-            "warning"
-          );
         target.hasClicked++;
-      } else {
-        Notification
-          .getInstance()
-          .show(
-            "警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
-            "warning"
-          );
-        target.hasClicked = 0;
+      } else if(!target.hasClicked){
+        Notification.getInstance().show(
+          "警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
+          "warning"
+        );
+        target.hasClicked = 1;
       }
     }
   }, 1000)
 );
 ipcRenderer.on("reset-password-reply", (e, a) => {
-  const { success } = arg;
+  const { success } = a;
   if (success) {
     Notification.getInstance().show("重置成功!", "success");
     return;

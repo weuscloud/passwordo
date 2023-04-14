@@ -18,7 +18,8 @@ function log(type, ...args) {
       console.error(message);
       break;
     default:
-      console.log(message);
+
+      console.log(type,message);
   }
   
   fs.appendFileSync(fileName, `${message}\n`);
