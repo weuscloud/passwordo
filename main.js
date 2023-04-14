@@ -6,7 +6,7 @@ const { app, ipcMain, Menu, globalShortcut } = require("electron");
 // 处于生产环境
 // 禁用所有的快捷键
 
-const { SingleWindow } = require("./mWindowMgr");
+const { SingleWindow } = require("./com/mWindowMgr");
 
 // 应用程序启动时创建窗口
 app.on("ready", () => {
@@ -25,10 +25,10 @@ ipcMain.on("go-to", (event, pageName) => {
   }
 });
 //login
-require("./page.login.main");
+require("./modules/page.login");
 
 //manage
-require("./page.manage.main");
+require("./modules/page.manage");
 
 //main
-require("./page.main");
+require("./modules/page.main");

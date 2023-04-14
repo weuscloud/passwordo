@@ -44,7 +44,7 @@ function SingleWindow(windowName) {
   });
   loadFile(
     windowName,
-    path.join(__dirname, "/page/" + windowName, windowName + ".html")
+    path.join(__dirname,"../", "/page/" + windowName, windowName + ".html")
   );
 }
 module.exports = {
