@@ -6,6 +6,7 @@ function addItems(content) {
     Notification.getInstance().show("Load failed");
     return;
   }
+  if(content.length==0)return;
   //清空
   const dropdownBtn = document.querySelector(".dropdown-items");
   dropdownBtn.textContent = "";
@@ -104,11 +105,12 @@ menu.addEventListener(
   }, 100)
 );
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
-  const { success, isAccount } = arg;
+  const { success, isAccount,uid } = arg;
+  let message="复制"+isAccount?"账号":"密码"+success?"成功":"失败"+"!\n"+uid;
   if (success === true) {
-    Notification.getInstance().show("复制成功!", "normal");
+    Notification.getInstance().show(message, "normal");
   } else {
-    Notification.getInstance().show("复制失败!", "warning");
+    Notification.getInstance().show(message, "warning");
   }
 });
 //查询所有uid;

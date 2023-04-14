@@ -16,8 +16,8 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
     : AccountManager.getInstance().queryPassword(uid);
   if (acc.length != 0) {
     clipboard.writeText(acc);
-    sendMessage("main", "clipboard-copy-reply", { success: true, isAccount });
+    sendMessage("main", "clipboard-copy-reply", { success: true, isAccount,uid });
   } else {
-    sendMessage("main", "clipboard-copy-reply", { success: false, isAccount });
+    sendMessage("main", "clipboard-copy-reply", { success: false, isAccount,uid });
   }
 });
