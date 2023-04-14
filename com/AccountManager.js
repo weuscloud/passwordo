@@ -148,10 +148,10 @@ class AccountManager {
       } catch (error) {
         // 权限不足，退出
         log("Failed to create file:", error);
-        return false;
+        return "FILE ACCESS DENIED:\n"+filepath;
       }
     }
-    if (!global.login.passwordHash === true) return false;
+    if (!global.login.passwordHash === true) return "PASSWORD NOT EXISTED";
     let data = "";
     for (const acc of this.accounts) {
       if (
@@ -177,9 +177,10 @@ class AccountManager {
         if (err) throw err;
       });
     } catch (error) {
-      return false;
+      log("WRITE FILE  DENIED");
+      return "WRITE FILE  DENIED:\n"+this.encryptedFileName;
     }
-    return true;
+    return "OK";
   }
 
   // 删除账号

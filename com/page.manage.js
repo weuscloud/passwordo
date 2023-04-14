@@ -42,9 +42,9 @@ ipcMain.on("modify-account", (event, arg) => {
 });
 //保存
 ipcMain.on("save-account", (event, arg) => {
-  let success = AccountManager.getInstance().storeToFile();
-  let message = success === true ? "成功" : "失败";
-  sendMessage("manage", "save-account-reply", { success, message });
+  let ret = AccountManager.getInstance().storeToFile();
+  let success = ret === "OK" ? true : false;
+  sendMessage("manage", "save-account-reply", { success, message:ret });
 });
 //新建
 ipcMain.on("create-account", (event, arg) => {

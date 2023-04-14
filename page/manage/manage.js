@@ -183,11 +183,11 @@ table.addEventListener(
   }, 1000)
 );
 ipcRenderer.on("save-account-reply", (event, arg) => {
-  const { success } = arg;
+  const { success,message } = arg;
   if (success === true) {
     Notification.getInstance().show("保存成功!", "normal");
   } else {
-    Notification.getInstance().show("保存失败!", "error");
+    Notification.getInstance().show(message, "error");
   }
 });
 
