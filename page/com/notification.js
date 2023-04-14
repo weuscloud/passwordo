@@ -42,7 +42,7 @@ class Notification {
         this.container.style.backgroundColor = "#ff0000";
         break;
       case "success":
-        this.container.style.backgroundColor = "#ff0000";
+        this.container.style.backgroundColor = "#52c41a";
         break;
       default:
         this.container.style.backgroundColor = "#1677ff";
