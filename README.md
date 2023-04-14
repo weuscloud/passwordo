@@ -16,5 +16,5 @@
 ![image](https://user-images.githubusercontent.com/103351906/232045979-88e5d19e-8aa7-45b5-a611-d9ac9dc3bce7.png)
 
 ## todo 
-### locale language...
+### language
 ### saveToUrl
