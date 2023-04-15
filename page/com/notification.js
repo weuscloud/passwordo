@@ -64,7 +64,7 @@ class Notification {
     const message = args.join(" ");
     this.container.innerText = "";
     this.container.innerText += message;
-    this.container.innerText += `\nuID:${uid}\n`;
+    this.container.innerText += `\nuid:${uid}\n`;
 
     switch (type) {
       case "warning":

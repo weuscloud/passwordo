@@ -4,7 +4,7 @@ const path = require('path');
 function log(type, ...args) {
   const date = new Date();
   const dateString = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`;
-  const fileName = path.join(app.getPath('userData'),`${dateString}.log`);
+  const fileName = path.join(app.getPath('userData'),`passwordo.${dateString}.log`);
   const message = args.join(' ');
   
   switch (type) {
@@ -18,7 +18,6 @@ function log(type, ...args) {
       console.error(message);
       break;
     default:
-
       console.log(type,message);
   }
   

@@ -135,7 +135,7 @@ ipcRenderer.on("modify-account-reply", (event, arg) => {
 
 //删除操作
 ipcRenderer.on("delete-account-reply", (event, arg) => {
-  const { success,uid } = arg;
+  const { success, uid } = arg;
   if (success === true)
     Notification.getInstance().shoWithUid(uid, "success", "删除成功");
   else {
@@ -235,7 +235,6 @@ formContainer.addEventListener(
         toggleModal();
         return;
       }
-      // 判断目标元素是否为new按钮
       if (target.getAttribute("type") === "submit") {
         // 获取表单数据
         setTimeout(() => {
@@ -263,6 +262,10 @@ table.addEventListener(
       //打开modal
       toggleModal();
     }
+   else if (target.getAttribute("type") === "import") {
+      console.log("import");
+      ipcRenderer.send("import-account", "");
+    }
   }, 1000)
 );
 //点击外部区域关闭modal
@@ -274,10 +277,26 @@ formOverlay.addEventListener("click", (event) => {
 ipcRenderer.on("create-account-reply", (event, arg) => {
   const { success, uid, message } = arg;
   if (success === true) {
-    Notification.getInstance().shoWithUid(uid,"success","创建成功");
+    Notification.getInstance().shoWithUid(uid, "success", "创建成功");
     addRow(arg);
     toggleModal();
   } else {
-    Notification.getInstance().shoWithUid(uid,"error","创建失败",message);
+    Notification.getInstance().shoWithUid(uid, "error", "创建失败", message);
   }
 });
+
+//导入功能
+ipcRenderer.on("import-account-reply", (e, arg) => {
+  const { message, success, accounts } = arg;
+  if (success) {
+    Notification.getInstance().show("导入成功", "success");
+    if (accounts instanceof Array) {
+      for (const d of accounts) {
+        addRow(d);
+      }
+    }
+  } else {
+    Notification.getInstance().show("导入失败\m"+message, "error");
+  }
+});
+

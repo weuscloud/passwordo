@@ -1,6 +1,9 @@
 const { ipcMain } = require("electron");
 const AccountManager = require("./AccountManager");
 const { sendMessage } = require("./WindowMgr");
+const { dialog } = require('electron');
+const fs = require('fs');
+const log = require("./log");
 //manage
 //查询
 ipcMain.on("query-account", () => {
@@ -63,3 +66,48 @@ ipcMain.on("create-account", (event, arg) => {
       uid,
     });
 });
+
+//导入功能
+
+function importFile() {
+  // 打开文件选择框
+  const result = dialog.showOpenDialogSync({
+    properties: ['openFile'],
+    filters: [
+      { name: 'AES256G files', extensions: ['aes256g'] }
+    ]
+  });
+
+  if (result && result.length > 0) {
+    const filePath = result[0];
+    log("file import path=", filePath);
+    return filePath;
+  }
+
+  return null;
+}
+
+ipcMain.on("import-account",(e,a)=>{
+  const filePath=importFile();
+  let ret=AccountManager.getInstance().readFromFile(filePath);
+  if(ret==="OK"){
+    //更新
+    sendMessage(
+      "manage",
+      "import-account-reply",
+      {
+        accounts:AccountManager.getInstance().query(),
+        success:true,
+      }
+    );
+  }else{
+    sendMessage(
+      "manage",
+      "import-account-reply",
+      {
+        message:ret,
+        success:false
+      }
+    );
+  }
+})

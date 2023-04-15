@@ -24,7 +24,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName = path.join(app.getPath("userData"), "accounts");
+  encryptedFileName = path.join(app.getPath("userData"), "passwordo.accounts");
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();
@@ -60,9 +60,16 @@ class AccountManager {
     fs.unlinkSync(this.encryptedFileName);
     return true;
   }
-  readFromFile() {
-    if (!fs.existsSync(this.encryptedFileName)) return;
-    if (!global.login.passwordHash === true) return;
+  readFromFile(filePath) {
+    const fileName=filePath||this.encryptedFileName;
+    try {
+      // 检查文件是否存在
+      fs.accessSync(fileName, fs.constants.F_OK);
+    } catch (error) {
+       return "FILE NOT EXISTED";
+    }
+
+    if (!global.login.passwordHash === true) "ADMIN PASSWORD NOT EXISTED";
     let key;
     if (global.login.digestKey) {
       key = global.login.digestKey;
@@ -72,7 +79,7 @@ class AccountManager {
     }
 
     try {
-      const inputFile = fs.readFileSync(this.encryptedFileName);
+      const inputFile = fs.readFileSync(fileName);
       const inputStr = decrypt(inputFile, key).toString();
       const lines = inputStr.split(/\r?\n/);
 
@@ -107,8 +114,10 @@ class AccountManager {
         }
       }
     } catch (error) {
-      log("decrypted failed!\n", error);
+      log("error","ADMIN PASSWORD NOT MATCH");
+      return "ADMIN PASSWORD NOT MATCH";
     }
+    return "OK";
   }
   // 添加账号
   addAccount({ uid, account, password, tips }) {
