@@ -16,5 +16,8 @@
 ![image](https://user-images.githubusercontent.com/103351906/232045979-88e5d19e-8aa7-45b5-a611-d9ac9dc3bce7.png)
 
 ## todo 
-### language
-### saveToUrl
+### 多语言切换
+### 保存至数据库或远程
+### 随机新建账号功能
+### 文件导入功能
+### 修改管理密码功能

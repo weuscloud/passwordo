@@ -6,7 +6,10 @@ function addItems(content) {
     Notification.getInstance().show("Load failed","error");
     return;
   }
-  if(content.length==0)return;
+  if(content.length==0){
+    Notification.getInstance().show("目前还没有账号！","warning");
+    return;
+  };
   //清空
   const dropdownBtn = document.querySelector(".dropdown-items");
   dropdownBtn.textContent = "";
@@ -106,7 +109,7 @@ menu.addEventListener(
 );
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
   const { success, isAccount,uid } = arg;
-  let message="复制"+isAccount?"账号":"密码"+success?"成功":"失败"+"!\n"+uid;
+  let message=`复制${isAccount?"账号":"密码"}${success?"成功":"失败"}\nuid:${uid}`;
   if (success === true) {
     Notification.getInstance().show(message, "success");
   } else {

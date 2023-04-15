@@ -127,12 +127,9 @@ table.addEventListener(
 ipcRenderer.on("modify-account-reply", (event, arg) => {
   const { success, message, uid } = arg;
   if (success === true) {
-    Notification.getInstance().show("修改" + uid + "成功!", "success");
+    Notification.getInstance().shoWithUid(uid, "success", "修改成功");
   } else {
-    Notification.getInstance().show(
-      "修改" + uid + "失败!\n" + message,
-      "error"
-    );
+    Notification.getInstance().shoWithUid(uid, "error", "修改失败");
   }
 });
 
@@ -140,9 +137,9 @@ ipcRenderer.on("modify-account-reply", (event, arg) => {
 ipcRenderer.on("delete-account-reply", (event, arg) => {
   const { success, message } = arg;
   if (success === true)
-    Notification.getInstance().show("删除" + message.uid + "成功!", "success");
+    Notification.getInstance().shoWithUid(uid, "success", "删除成功");
   else {
-    Notification.getInstance().show("删除" + message.uid + "失败!", "error");
+    Notification.getInstance().shoWithUid(uid, "success", "删除成功");
   }
 });
 table.addEventListener(
@@ -183,7 +180,7 @@ table.addEventListener(
   }, 1000)
 );
 ipcRenderer.on("save-account-reply", (event, arg) => {
-  const { success,message } = arg;
+  const { success, message } = arg;
   if (success === true) {
     Notification.getInstance().show("保存成功!", "success");
   } else {
@@ -277,13 +274,10 @@ formOverlay.addEventListener("click", (event) => {
 ipcRenderer.on("create-account-reply", (event, arg) => {
   const { success, uid, message } = arg;
   if (success === true) {
-    Notification.getInstance().show("创建" + uid + "成功!", "success");
+    Notification.getInstance().shoWithUid(uid,"success","创建成功");
     addRow(arg);
     toggleModal();
   } else {
-    Notification.getInstance().show(
-      "创建" + uid + "失败!\n" + message,
-      "error"
-    );
+    Notification.getInstance().shoWithUid(uid,"error","创建失败");
   }
 });
