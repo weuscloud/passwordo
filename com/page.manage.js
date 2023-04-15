@@ -15,7 +15,7 @@ ipcMain.on("delete-account", (event, arg) => {
   const { uid, account, password } = arg;
   sendMessage("manage", "delete-account-reply", {
     success: AccountManager.getInstance().deleteAccount(uid),
-    message: { uid },
+    uid
   });
 });
 //修改
@@ -55,17 +55,11 @@ ipcMain.on("create-account", (event, arg) => {
       message: ret,
       success: false,
       uid,
-      account,
-      password,
-      tips,
     });
   else
     sendMessage("manage", "create-account-reply", {
       message: ret,
       success: true,
       uid,
-      account,
-      password,
-      tips,
     });
 });

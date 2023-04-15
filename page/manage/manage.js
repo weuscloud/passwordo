@@ -135,7 +135,7 @@ ipcRenderer.on("modify-account-reply", (event, arg) => {
 
 //删除操作
 ipcRenderer.on("delete-account-reply", (event, arg) => {
-  const { success, message } = arg;
+  const { success,uid } = arg;
   if (success === true)
     Notification.getInstance().shoWithUid(uid, "success", "删除成功");
   else {
@@ -157,8 +157,8 @@ table.addEventListener(
       if (row) {
         setTimeout(() => {
           const uid = row.querySelector(".uid").textContent;
-          row.remove();
           ipcRenderer.send("delete-account", { uid });
+          row.remove();
         }, 200);
       }
     }
@@ -278,6 +278,6 @@ ipcRenderer.on("create-account-reply", (event, arg) => {
     addRow(arg);
     toggleModal();
   } else {
-    Notification.getInstance().shoWithUid(uid,"error","创建失败");
+    Notification.getInstance().shoWithUid(uid,"error","创建失败",message);
   }
 });
