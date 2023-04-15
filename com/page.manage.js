@@ -89,6 +89,7 @@ function importFile() {
 
 ipcMain.on("import-account",(e,a)=>{
   const filePath=importFile();
+  if(filePath===null)return;
   let ret=AccountManager.getInstance().readFromFile(filePath);
   if(ret==="OK"){
     //更新

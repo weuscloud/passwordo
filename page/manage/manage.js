@@ -291,10 +291,17 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
   if (success) {
     Notification.getInstance().show("导入成功", "success");
     if (accounts instanceof Array) {
-      for (const d of accounts) {
-        addRow(d);
-      }
+      let index = 0;
+      const addRowAsync = () => {
+        if (index < accounts.length) {
+          addRow(accounts[index]);
+          index++;
+          setTimeout(addRowAsync, 100);
+        }
+      };
+      addRowAsync();
     }
+    
   } else {
     Notification.getInstance().show("导入失败\m"+message, "error");
   }
