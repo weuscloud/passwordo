@@ -31,6 +31,16 @@ class AccountManager {
     }
     return AccountManager.instance;
   }
+  setFilePath(path) {
+    try {
+      // 检查文件是否存在
+      fs.accessSync(path, fs.constants.F_OK);
+    } catch (error) {
+      return false;
+    }
+    this.encryptedFileName=path;
+    return true;
+  }
   checkPassword(password) {
     if (!password) return false;
     const key = crypto.createHash("sha256").update(password).digest();
@@ -61,12 +71,12 @@ class AccountManager {
     return true;
   }
   readFromFile(filePath) {
-    const fileName=filePath||this.encryptedFileName;
+    const fileName = filePath || this.encryptedFileName;
     try {
       // 检查文件是否存在
       fs.accessSync(fileName, fs.constants.F_OK);
     } catch (error) {
-       return "FILE NOT EXISTED";
+      return "FILE NOT EXISTED";
     }
 
     if (!global.login.passwordHash === true) "ADMIN PASSWORD NOT EXISTED";
@@ -114,7 +124,7 @@ class AccountManager {
         }
       }
     } catch (error) {
-      log("error","ADMIN PASSWORD NOT MATCH");
+      log("error", "ADMIN PASSWORD NOT MATCH");
       return "ADMIN PASSWORD NOT MATCH";
     }
     return "OK";

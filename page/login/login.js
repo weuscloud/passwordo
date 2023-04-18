@@ -1,8 +1,7 @@
 // renderer.js
 const { ipcRenderer } = require("electron");
 const Notification = require("../com/notification");
-const { throttle, debounce } = require("../../com/throttle");
-const log = require("../../com/log");
+const { throttle } = require("../../com/throttle");
 const loginForm = document.getElementById("login-form");
 loginForm.addEventListener(
   "submit",
@@ -26,7 +25,7 @@ loginForm.addEventListener(
       if (target.hasClicked === 1) {
         ipcRenderer.send("reset-password", "");
         target.hasClicked++;
-      } else if(!target.hasClicked){
+      } else if (!target.hasClicked) {
         Notification.getInstance().show(
           "警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
           "warning"
@@ -48,4 +47,23 @@ ipcRenderer.on("reset-password-reply", (e, a) => {
 ipcRenderer.on("login-error", (event, arg) => {
   const { success, message } = arg;
   Notification.getInstance().show(message, "error");
+});
+
+const input = loginForm.querySelector("#username");
+input.addEventListener("keydown", (event) => {
+  event.preventDefault();
+});
+input.readOnly = true;
+input.addEventListener("click", (e) => {
+  if (e.target === input) {
+    ipcRenderer.send("select-file");
+  }
+});
+ipcRenderer.on("select-file-reply", (event, { fileName }) => {
+  if (fileName) {
+    const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
+    input.value = fileNameWithoutExt;
+  } else {
+    input.value = "";
+  }
 });

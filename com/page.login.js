@@ -1,7 +1,10 @@
 const { ipcMain } = require("electron");
 const AccountManager = require("./AccountManager");
-const { sendMessage, SingleWindow, onClose } = require("./WindowMgr");
+const { sendMessage, SingleWindow } = require("./WindowMgr");
 const crypto = require("crypto");
+const path = require("path");
+const { selectFile } = require("./utils");
+const log = require("./log");
 // 接收登录请求
 ipcMain.on("login-form-submission", (event, arg) => {
   const { account, password } = arg;
@@ -11,10 +14,9 @@ ipcMain.on("login-form-submission", (event, arg) => {
       message: "账号或密码错误!",
     });
   } else {
-    
     global.login = {
       success: true,
-      passwordHash:crypto.createHash("sha256").update(password),
+      passwordHash: crypto.createHash("sha256").update(password),
     };
     //跳转至主窗口
     AccountManager.getInstance().readFromFile();
@@ -23,7 +25,18 @@ ipcMain.on("login-form-submission", (event, arg) => {
 });
 
 //重置账号
-ipcMain.on("reset-password", (e,a)=>{
-  const success=AccountManager.getInstance().deleteFile();
-  sendMessage("login","reset-password-reply",{success})
+ipcMain.on("reset-password", (e, a) => {
+  const success = AccountManager.getInstance().deleteFile();
+  sendMessage("login", "reset-password-reply", { success });
+});
+
+//选择文件
+ipcMain.on("select-file", (event) => {
+  const filePaths = selectFile();
+  if (filePaths && filePaths.length > 0) {
+    AccountManager.getInstance().setFilePath(filePaths);
+    const fileNameWithExt = path.basename(filePaths);
+    const fileName = fileNameWithExt.slice(0, fileNameWithExt.lastIndexOf("."));
+    sendMessage("login", "select-file-reply", { fileName });
+  }
 });
