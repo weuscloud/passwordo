@@ -8,7 +8,7 @@ winCodeSign-2.6.0.7z
 electron-v24.1.2-win32-x64.zip
 ```
 3.将上述两个文件放在目录 %USERPROFILE%\AppData\Local\electron\Cache 下。
-3.执行
+### 4.执行
 ```bash
 electron-builder -w
 ```
@@ -23,7 +23,7 @@ electron-builder -w
 ![image](https://user-images.githubusercontent.com/103351906/232045747-e53e6844-9673-412b-9db4-45904d2c2c3e.png)
 
 ## 管理页
-![image](https://user-images.githubusercontent.com/103351906/232045979-88e5d19e-8aa7-45b5-a611-d9ac9dc3bce7.png)
+![image](https://user-images.githubusercontent.com/103351906/232791156-5ede061a-5ac9-4f74-aee0-a55f241dec60.png)
 
 ## 完成
 
