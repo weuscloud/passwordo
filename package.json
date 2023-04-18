@@ -1,6 +1,6 @@
 {
   "name": "passwordo",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -9,18 +9,20 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^24.0.0"
+    "electron": "^24.1.2"
   },
   "dependencies": {},
-  "build":{
-    "appId":"com.devw.passwordo",
-    "copyright":"devw",
-    "productName":"passworDo",
-    "icon":"./static/logo512.png",
-    "win":{
-      "target":[
+  "build": {
+    "electronVersion": "24.1.2",
+    "appId": "com.devw.passwordo",
+    "copyright": "devw",
+    "productName": "passworDo",
+    "icon": "./static/logo512.png",
+    "win": {
+      "target": [
         "portable"
       ]
-    }
+    },
+    "artifactName": "${productName}-${version}.${ext}"
   }
 }
