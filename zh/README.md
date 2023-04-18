@@ -20,7 +20,7 @@ electron-builder -w
 
 ## 新建账户
 
-![image](https://user-images.githubusercontent.com/103351906/232045747-e53e6844-9673-412b-9db4-45904d2c2c3e.png)
+![image](https://user-images.githubusercontent.com/103351906/232791435-572e458f-b53f-44ed-af8e-f0ac08b593f0.png)
 
 ## 管理页
 ![image](https://user-images.githubusercontent.com/103351906/232791156-5ede061a-5ac9-4f74-aee0-a55f241dec60.png)
