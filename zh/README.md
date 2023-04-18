@@ -12,17 +12,17 @@ electron-v24.1.2-win32-x64.zip
 ```bash
 electron-builder -w
 ```
-## page login
+## 登录页
 ![image](https://user-images.githubusercontent.com/103351906/232045402-3381a78c-21b1-4a64-8b45-d7697232c7ff.png)
 
-## page copy
+## 主页
 ![image](https://user-images.githubusercontent.com/103351906/232045567-0acc4251-af44-4945-a395-79215ba038b5.png)
 
-## new account
+## 新建账户
 
 ![image](https://user-images.githubusercontent.com/103351906/232045747-e53e6844-9673-412b-9db4-45904d2c2c3e.png)
 
-## page manage
+## 管理页
 ![image](https://user-images.githubusercontent.com/103351906/232045979-88e5d19e-8aa7-45b5-a611-d9ac9dc3bce7.png)
 
 ## 完成
