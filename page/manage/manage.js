@@ -1,7 +1,7 @@
 const Notification = require("../com/notification");
 const { ipcRenderer } = require("electron");
 const { throttle, debounce } = require("../../com/throttle");
-
+const Translator = require("../com/Translator");
 // 监听container元素中的点击事件
 let table = document.querySelector(".container");
 
@@ -41,7 +41,7 @@ function addRow({ uid, account, password, tips }) {
   actionCol.classList.add("col", "action");
   var submitButton = document.createElement("button");
   submitButton.type = "delete";
-  submitButton.textContent = "删除";
+  submitButton.textContent = "{delete}";
   actionCol.appendChild(submitButton);
 
   // 将新的列添加到行中
@@ -307,3 +307,14 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
   }
 });
 
+//翻译
+// 发送消息给主进程请求语言数据
+ipcRenderer.send("get-lang-data");
+ipcRenderer.on("get-lang-data-reply", (e, arg) => {
+  const { success, langData } = arg;
+  console.log(success);
+  if (success === true) {
+    const translator = new Translator(langData);
+    translator.translatePage();
+  }
+});

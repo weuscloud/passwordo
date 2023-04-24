@@ -1,5 +1,3 @@
-
-
 function createContainer(inst) {
   if (inst instanceof Notification) {
     inst.container = document.createElement("div");

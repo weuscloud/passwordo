@@ -30,9 +30,9 @@ electron-builder -w
 ### Modify account name & password
 ### Codify account name & password
 ### Import data from file
+### Language switching
 
 ## todo 
-### Language switching
 ### store data to remote db
 ### Random account creation feature
 ### Improving event listening

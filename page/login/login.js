@@ -2,6 +2,7 @@
 const { ipcRenderer } = require("electron");
 const Notification = require("../com/notification");
 const { throttle } = require("../../com/throttle");
+const Translator = require("../com/Translator");
 const loginForm = document.getElementById("login-form");
 loginForm.addEventListener(
   "submit",
@@ -65,5 +66,18 @@ ipcRenderer.on("select-file-reply", (event, { fileName }) => {
     input.value = fileNameWithoutExt;
   } else {
     input.value = "";
+  }
+});
+
+//翻译
+// 发送消息给主进程请求语言数据
+ipcRenderer.send("get-lang-data");
+ipcRenderer.on("get-lang-data-reply", (e, arg) => {
+ 
+  const { success, langData } = arg;
+  console.log(success)
+  if (success === true) {
+    const translator = new Translator(langData);
+    translator.translatePage();
   }
 });

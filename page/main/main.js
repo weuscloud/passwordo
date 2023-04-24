@@ -1,15 +1,16 @@
 const { ipcRenderer } = require("electron");
 const { debounce } = require("../../com/throttle");
 const Notification = require("../com/notification");
+const Translator = require("../com/Translator");
 function addItems(content) {
   if (!content instanceof Array) {
-    Notification.getInstance().show("Load failed","error");
+    Notification.getInstance().show("Load failed", "error");
     return;
   }
-  if(content.length==0){
-    Notification.getInstance().show("目前还没有账号！","warning");
+  if (content.length == 0) {
+    Notification.getInstance().show("目前还没有账号！", "warning");
     return;
-  };
+  }
   //清空
   const dropdownBtn = document.querySelector(".dropdown-items");
   dropdownBtn.textContent = "";
@@ -34,26 +35,25 @@ function addItems(content) {
 
 const Looper = {
   isLoop: false,
-  isAccount:true,
+  isAccount: true,
 };
 
-
-Object.defineProperty(Looper, 'isAccount', {
+Object.defineProperty(Looper, "isAccount", {
   get() {
     return isAccount;
   },
   set(newValue) {
-    if(newValue===false&&Looper.isLoop){
+    if (newValue === false && Looper.isLoop) {
       //复制密码后
       let uids = document.querySelectorAll(".dropdown-item");
       //模拟一次点击
-      let cur=document.querySelector(".dropdown-btn").idx;
+      let cur = document.querySelector(".dropdown-btn").idx;
       cur++;
-      if(0<=cur&&cur<uids.length){
-        document.querySelector(".dropdown-btn").idx=cur;
+      if (0 <= cur && cur < uids.length) {
+        document.querySelector(".dropdown-btn").idx = cur;
         uids[cur].click();
-      }else{
-        document.querySelector(".dropdown-btn").idx=0
+      } else {
+        document.querySelector(".dropdown-btn").idx = 0;
       }
     }
     isAccount = newValue;
@@ -63,10 +63,7 @@ Object.defineProperty(Looper, 'isAccount', {
 });
 
 const menu = document.querySelector(".menu");
-function loopItems() {
-  
-  
-}
+function loopItems() {}
 menu.addEventListener(
   "click",
   debounce(function (event) {
@@ -108,8 +105,10 @@ menu.addEventListener(
   }, 100)
 );
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
-  const { success, isAccount,uid } = arg;
-  let message=`复制${isAccount?"账号":"密码"}${success?"成功":"失败"}\nuid:${uid}`;
+  const { success, isAccount, uid } = arg;
+  let message = `复制${isAccount ? "账号" : "密码"}${
+    success ? "成功" : "失败"
+  }\nuid:${uid}`;
   if (success === true) {
     Notification.getInstance().show(message, "success");
   } else {
@@ -120,4 +119,16 @@ ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
 ipcRenderer.send("query-uid", "");
 ipcRenderer.on("query-uid-reply", (event, arg) => {
   addItems(arg);
+});
+
+//翻译
+// 发送消息给主进程请求语言数据
+ipcRenderer.send("get-lang-data");
+ipcRenderer.on("get-lang-data-reply", (e, arg) => {
+  const { success, langData } = arg;
+  console.log(success);
+  if (success === true) {
+    const translator = new Translator(langData);
+    translator.translatePage();
+  }
 });

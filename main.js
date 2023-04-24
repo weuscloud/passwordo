@@ -4,11 +4,9 @@ const { SingleWindow } = require("./com/WindowMgr");
 
 // 应用程序启动时创建窗口
 app.on("ready", () => {
-  //createLoginWindow();
-  //createMainWindow();
   //globalShortcut.unregisterAll();
   // 隐藏菜单栏和禁用快捷键
-  Menu.setApplicationMenu(null);
+ Menu.setApplicationMenu(null);
   SingleWindow("login");
 });
 
@@ -26,3 +24,6 @@ require("./com/page.manage");
 
 //main
 require("./com/page.main");
+
+//lang-loader
+require("./com/LanguageLoader");

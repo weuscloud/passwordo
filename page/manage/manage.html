@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Manage</title>
+    <title>{Manage}</title>
     <link rel="stylesheet" href="manage.css" />
   </head>
   <body>
@@ -15,38 +15,38 @@
       <div class="modal-container"></div>
       <div class="form-container">
         <div id="account-form">
-          <div class="title"><h2>新账号</h2></div>
+          <div class="title"><h2>{NewAccount}</h2></div>
 
           <div>
             <label for="uid">UID</label>
-            <input type="text" id="uid" placeholder="9位纯数字UID" />
+            <input type="text" id="uid" placeholder="{placeholderUid}" />
           </div>
 
           <div>
-            <label for="account">账号</label>
+            <label for="account">{Account}</label>
             <input
               type="text"
               id="account"
-              placeholder="11位数手机号或者邮箱"
+              placeholder="{placeholderAccount}"
             />
           </div>
 
           <div>
-            <label for="password">密码</label>
+            <label for="password">{password}</label>
             <input
               type="password"
               id="password"
-              placeholder="8-15位，至少包括大小写字母、英文符号和数字的两种。"
+              placeholder="{placeholderPassword}"
             />
           </div>
 
           <div>
-            <label for="tips">备注</label>
-            <input type="text" id="tips" placeholder="可选，100字以下。" />
+            <label for="tips">{tips}</label>
+            <input type="text" id="tips" placeholder="{tipshelper}" />
           </div>
           <div class="modal-btn">
-            <button type="cancel">取消</button>
-            <button type="submit">确认</button>
+            <button type="cancel">{Cancel}</button>
+            <button type="submit">{done}</button>
           </div>
         </div>
       </div>
@@ -54,23 +54,26 @@
 
     <div class="container">
       <div class="helper">
-        使用帮助:
-        <br />备注功能字数上限400字。
-        <br />双击相应内容以修改,删除、修改账号完毕后务必<strong>点击存档按钮保存</strong>。
+        {usage}:
+        <br />uid:<span>"{placeholderUid}"</span>
+        <br />{account}:<span>"{placeholderAccount}"</span>
+        <br />{password}:<span>"{placeholderPassword}"</span>
+        <br />{tips}:<span>"{tipshelper}"</span>
+        <br />{modifyhelper0}<strong>{modifyhelper1}</strong>
       </div>
       <div id="top-header" class="row header">
-        <div class="col uid"><button type="back">主页</button></div>
+        <div class="col uid"><button type="back">{mainpage}</button></div>
         <div class="col titlebar"></div>
-        <div class="col action"><button type="import">导入</button></div>
-        <div class="col action"><button type="new">新建</button></div>
-        <div class="col action"><button type="save">存档</button></div>
+        <div class="col action"><button type="import">{import}</button></div>
+        <div class="col action"><button type="new">{NewAccount}</button></div>
+        <div class="col action"><button type="save">{SaveDoc}</button></div>
       </div>
       <div class="row header">
         <div class="col uid">UID</div>
-        <div class="col account">账号</div>
-        <div class="col password">密码</div>
-        <div class="col tips">备注</div>
-        <div class="col action">操作</div>
+        <div class="col account">{Account}</div>
+        <div class="col password">{password}</div>
+        <div class="col tips">{tips}</div>
+        <div class="col action">{operator}</div>
       </div>
     </div>
     <script src="manage.js"></script>
