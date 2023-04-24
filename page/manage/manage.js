@@ -260,6 +260,8 @@ table.addEventListener(
       target.getAttribute("type") === "new"
     ) {
       //打开modal
+      const randomNum = Math.floor(Math.random() * 900000000 + 100000000);
+      formContainer.querySelector("#uid").value=randomNum;
       toggleModal();
     }
    else if (target.getAttribute("type") === "import") {
