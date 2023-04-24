@@ -12,18 +12,17 @@ electron-v24.1.2-win32-x64.zip
 electron-builder -w
 ```
 ## page login
-![image](https://user-images.githubusercontent.com/103351906/232045402-3381a78c-21b1-4a64-8b45-d7697232c7ff.png)
+![image](https://user-images.githubusercontent.com/103351906/234021718-9625b453-1a39-495b-9650-24544bd7ea7d.png)
 
 ## page copy
-![image](https://user-images.githubusercontent.com/103351906/232045567-0acc4251-af44-4945-a395-79215ba038b5.png)
+![image](https://user-images.githubusercontent.com/103351906/234021815-9c8c2bb1-b8ec-4a61-a640-83d31272ddd4.png)
 
 ## new account
 
-![image](https://user-images.githubusercontent.com/103351906/232045747-e53e6844-9673-412b-9db4-45904d2c2c3e.png)
+![image](https://user-images.githubusercontent.com/103351906/234021903-979fa086-0633-485d-a7f6-31730738dd19.png)
 
 ## page manage
-![image](https://user-images.githubusercontent.com/103351906/232045979-88e5d19e-8aa7-45b5-a611-d9ac9dc3bce7.png)
-
+![image](https://user-images.githubusercontent.com/103351906/234022069-87afad81-0e03-4a83-95ee-eea6efdcc160.png)
 ## completed
 ### Account switching 
 ### Import & new account
