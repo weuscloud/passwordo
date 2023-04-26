@@ -1,7 +1,9 @@
 // main.js
+
 const { app, ipcMain, Menu } = require("electron");
 const { SingleWindow } = require("./com/WindowMgr");
 require('dotenv').config();
+
 // 应用程序启动时创建窗口
 app.on("ready", () => {
   //globalShortcut.unregisterAll();
@@ -26,4 +28,4 @@ require("./com/page.manage");
 require("./com/page.main");
 
 //lang-loader
-require("./com/LanguageLoader");
+require("./com/LangLoader");
