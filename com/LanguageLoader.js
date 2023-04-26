@@ -1,19 +1,17 @@
-const Lang = {
-  China: "zh",
-  LANGFILENOTEXISTED: "en",
-};
 const { ipcMain, app } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const log = require("./log");
-
-const apiKey = "192ff3551b7746deb6716a9dee986a76";
-const url = `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}`;
+const AdmZip = require("adm-zip");
 const LOADER_STATE = {
   FAILURE: 1,
   SUCCESS: 0,
   PENDING: -1,
+};
+const Lang = {
+  China: "zh",
+  LANGFILENOTEXISTED: "en",
 };
 class LanguageLoader {
   STATE = LOADER_STATE["PENDING"];
@@ -29,20 +27,51 @@ class LanguageLoader {
   // 加载语言文件
   loadLanguageData() {
     try {
-      const langFilePath = path.join(
-        __dirname,
-        "../",
-        "locales",
-        `${this.lang}.json`
-      );
-      log(langFilePath);
-      this.langData = JSON.parse(fs.readFileSync(langFilePath, "utf8"));
-      this.STATE = LOADER_STATE["SUCCESS"];
+      const langFolderPath = path.join(app.getPath("userData"), "locales");
+      if (!fs.existsSync(langFolderPath)) {
+        fs.mkdirSync(langFolderPath);
+      }
+
+      const langFilePath = path.join(langFolderPath, `${this.lang}.json`);
+      const fileExists = fs.existsSync(langFilePath);
+      if (!fileExists) {
+        const langZipPath = path.join(langFolderPath, "lang.zip");
+        const langZipUrl = process.env.LANG_SERVER;
+        axios
+          .get(langZipUrl, { responseType: "stream" })
+          .then((response) => {
+            const writer = fs.createWriteStream(langZipPath);
+            response.data.pipe(writer);
+            writer.on("finish", () => {
+              const zip = new AdmZip(langZipPath);
+              zip.extractAllToAsync(langFolderPath, true, (err) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  console.log(`Extracted ${langZipPath} to ${langFolderPath}`);
+                  this.langData = JSON.parse(
+                    fs.readFileSync(langFilePath, "utf8")
+                  );
+                  fs.unlink(langZipPath,()=>{});
+                  this.STATE = LOADER_STATE["SUCCESS"];
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        this.langData = JSON.parse(fs.readFileSync(langFilePath, "utf8"));
+        this.STATE = LOADER_STATE["SUCCESS"];
+      }
     } catch (error) {
-      log(3, `加载语言文件失败: ${error.message}`);
+      log(3, `Failed to load language file: ${error.message}`);
+      this.langData = {};
       this.STATE = LOADER_STATE["FAILURE"];
     }
   }
+
   getState() {
     return this.STATE;
   }
@@ -62,13 +91,13 @@ class LanguageLoader {
     }
   }
   getLangData() {
-    return this.langData;
+    return this.langData || {};
   }
 }
 const langLoader = new LanguageLoader();
+langLoader.loadLanguageData();
 // 监听来自渲染进程的消息，发送语言数据
 ipcMain.on("get-lang-data", (event, arg) => {
-  langLoader.loadLanguageData();
   event.sender.send("get-lang-data-reply", {
     langData: langLoader.getLangData(),
     success: langLoader.getState() === LOADER_STATE["SUCCESS"],
@@ -92,12 +121,14 @@ function getCountryName() {
     fs.accessSync(filePath, fs.constants.F_OK);
     const data = fs.readFileSync(filePath, "utf-8");
     const userData =
-      data.length < 10 ? { country_name: "LANGFILENOTEXISTED" } : JSON.parse(data);
+      data.length < 10
+        ? { country_name: "LANGFILENOTEXISTED" }
+        : JSON.parse(data);
     return userData.country_name;
   } catch (error) {
     log("user data", " not found.");
     axios
-      .get(url)
+      .get(process.env.IPGO_URL)
       .then((response) => {
         fs.writeFileSync(filePath, JSON.stringify(response.data));
       })

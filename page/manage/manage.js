@@ -22,8 +22,7 @@ function addRow({ uid, account, password, tips }) {
   // 创建新的账号元素
   var accountCol = document.createElement("div");
   accountCol.classList.add("col", "account");
-  accountCol.textContent = "••••••••••••";
-  accountCol.trueText = account;
+  accountCol.textContent =account;
 
   // 创建新的密码元素
   var passwordCol = document.createElement("div");
@@ -84,8 +83,8 @@ table.addEventListener(
           if (row) {
             setTimeout(() => {
               const uid = row.querySelector(".uid").textContent;
-              const account = row.querySelector(".account").trueText;
-              const password = row.querySelector(".password").trueText;
+              const account = row.querySelector(".account").trueText||row.querySelector(".account").textContent;
+              const password = row.querySelector(".password").trueText||row.querySelector(".password").textContent;
               const tips = row.querySelector(".tips").textContent;
               ipcRenderer.send("modify-account", {
                 uid,

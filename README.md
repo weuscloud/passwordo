@@ -2,8 +2,8 @@
 
 ## Table of Contents
 
-- [English Version](./en/README.md)
-- [Chinese Version (简体中文版)](./zh/README.md)
+- [English Version](./README/en/README.md)
+- [Chinese Version (简体中文版)](./README/zh/README.md)
 
 ## English Version
 
