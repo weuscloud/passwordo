@@ -13,17 +13,17 @@ electron-v24.1.2-win32-x64.zip
 electron-builder -w
 ```
 ## 登录页
-![image](https://user-images.githubusercontent.com/103351906/232045402-3381a78c-21b1-4a64-8b45-d7697232c7ff.png)
+![image](https://user-images.githubusercontent.com/103351906/234022344-d94dac6f-0fe9-4f42-85d6-1a7d194fd50f.png)
 
 ## 主页
-![image](https://user-images.githubusercontent.com/103351906/232045567-0acc4251-af44-4945-a395-79215ba038b5.png)
+![image](https://user-images.githubusercontent.com/103351906/234022413-c8c01d94-6849-4931-a024-444099af550f.png)
 
 ## 新建账户
 
-![image](https://user-images.githubusercontent.com/103351906/232791435-572e458f-b53f-44ed-af8e-f0ac08b593f0.png)
+![image](https://user-images.githubusercontent.com/103351906/234022584-454efabc-19ee-4472-9c0c-4128a66f42bf.png)
 
 ## 管理页
-![image](https://user-images.githubusercontent.com/103351906/232791156-5ede061a-5ac9-4f74-aee0-a55f241dec60.png)
+![image](https://user-images.githubusercontent.com/103351906/234022497-818cf35e-88dd-4e73-9339-ec35d34152d5.png)
 
 ## 完成
 
