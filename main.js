@@ -8,7 +8,7 @@ require('dotenv').config();
 app.on("ready", () => {
   //globalShortcut.unregisterAll();
   // 隐藏菜单栏和禁用快捷键
- Menu.setApplicationMenu(null);
+ //Menu.setApplicationMenu(null);
   SingleWindow("login");
 });
 

@@ -5,6 +5,34 @@ const Translator = require("../com/Translator");
 // 监听container元素中的点击事件
 let table = document.querySelector(".container");
 
+function add(table, {password,...arg}) {
+ const other={...arg};
+
+  // 创建新的行元素
+  let row = document.createElement("div");
+  row.classList.add("row");
+  row.classList.add("line");
+  
+  Object.keys(other).forEach((key)=>{
+    let col = document.createElement("div");
+    col.classList.add("col");
+    col.classList.add(key);
+    if(typeof other[key]==='string')
+    col.textContent=other[key];
+    row.appendChild(col);
+  })
+  if(password&&typeof password==='string'){
+    let col = document.createElement("div");
+    col.classList.add("col");
+    col.classList.add("password");
+    col.textContent="••••••••••••";
+    col.trueText=password;
+    row.appendChild(col);
+  }
+  table.appendChild(row);
+}
+
+
 function addRow({ uid, account, password, tips }) {
   // 获取表格元素
   var table = document.querySelector(".container");
@@ -42,7 +70,11 @@ function addRow({ uid, account, password, tips }) {
   submitButton.type = "delete";
   submitButton.textContent = "{delete}";
   actionCol.appendChild(submitButton);
-
+  //翻译
+  if(g_langData){
+    const translator = new Translator(g_langData);
+    translator.translateElement(submitButton);
+  }
   // 将新的列添加到行中
   row.appendChild(uidCol);
   row.appendChild(accountCol);
@@ -83,8 +115,8 @@ table.addEventListener(
           if (row) {
             setTimeout(() => {
               const uid = row.querySelector(".uid").textContent;
-              const account = row.querySelector(".account").trueText||row.querySelector(".account").textContent;
-              const password = row.querySelector(".password").trueText||row.querySelector(".password").textContent;
+              const account = row.querySelector(".account").textContent;
+              const password = row.querySelector(".password").trueText;
               const tips = row.querySelector(".tips").textContent;
               ipcRenderer.send("modify-account", {
                 uid,
@@ -264,7 +296,6 @@ table.addEventListener(
       toggleModal();
     }
    else if (target.getAttribute("type") === "import") {
-      console.log("import");
       ipcRenderer.send("import-account", "");
     }
   }, 1000)
@@ -276,10 +307,10 @@ formOverlay.addEventListener("click", (event) => {
 });
 
 ipcRenderer.on("create-account-reply", (event, arg) => {
-  const { success, uid, message } = arg;
+  const { success, message,account,password, uid,tips } = arg;
   if (success === true) {
     Notification.getInstance().shoWithUid(uid, "success", "创建成功");
-    addRow(arg);
+    addRow({ password,account, uid,tips });
     toggleModal();
   } else {
     Notification.getInstance().shoWithUid(uid, "error", "创建失败", message);
@@ -307,14 +338,14 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
     Notification.getInstance().show("导入失败\m"+message, "error");
   }
 });
-
+let g_langData;
 //翻译
 // 发送消息给主进程请求语言数据
 ipcRenderer.send("get-lang-data",{lang:navigator.language});
 ipcRenderer.on("get-lang-data-reply", (e, arg) => {
   const { success, langData } = arg;
-  console.log(success);
   if (success === true) {
+    g_langData=langData;
     const translator = new Translator(langData);
     translator.translatePage();
   }
