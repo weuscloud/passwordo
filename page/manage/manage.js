@@ -4,87 +4,85 @@ const { throttle, debounce } = require("../../com/throttle");
 const Translator = require("../com/Translator");
 // 监听container元素中的点击事件
 let table = document.querySelector(".container");
+const tbFormat = {
+  uid: "",
+  account: "",
+  password: "",
+  tips: "",
+  action: "delete",
+};
 
-function add(table, {password,...arg}) {
- const other={...arg};
-
+function add(other) {
+  if (typeof other !== "object") return;
   // 创建新的行元素
   let row = document.createElement("div");
   row.classList.add("row");
   row.classList.add("line");
-  
-  Object.keys(other).forEach((key)=>{
+
+  Object.keys(other).forEach((key) => {
     let col = document.createElement("div");
     col.classList.add("col");
     col.classList.add(key);
-    if(typeof other[key]==='string')
-    col.textContent=other[key];
+    if (typeof other[key] === "string") {
+      if (key === "password") {
+        col.textContent = "••••••••••••";
+        col.trueText = other[key];
+      } else if (key === "action" && typeof other[key] === "string") {
+        const translator = new Translator(window.g_langData);
+
+        let ops = other[key].split(",");
+        ops.forEach((item) => {
+          let submitButton = document.createElement("button");
+          submitButton.type = item;
+          submitButton.textContent = `{${item}}`;
+          col.appendChild(submitButton);
+          if (window.g_langData) {
+            translator.translateElement(submitButton);
+          }
+        });
+      } else {
+        col.textContent = other[key];
+      }
+    }
     row.appendChild(col);
-  })
-  if(password&&typeof password==='string'){
+  });
+
+  document.querySelector(".container").appendChild(row);
+}
+function addHeader(obj) {
+  let row = document.createElement("div");
+  row.classList.add("row", "header");
+
+  Object.keys(obj).forEach((key) => {
     let col = document.createElement("div");
-    col.classList.add("col");
-    col.classList.add("password");
-    col.textContent="••••••••••••";
-    col.trueText=password;
+    col.classList.add("col", key);
+    col.textContent = `{${key}}`;
+    if (window.g_langData) {
+      const translator = new Translator(window.g_langData);
+      translator.translateElement(col);
+    }
     row.appendChild(col);
-  }
-  table.appendChild(row);
-}
-
-
-function addRow({ uid, account, password, tips }) {
-  // 获取表格元素
-  var table = document.querySelector(".container");
-
-  // 创建新的行元素
-  var row = document.createElement("div");
-  row.classList.add("row");
-  row.classList.add("line");
-
-  // 创建新的UID元素
-  var uidCol = document.createElement("div");
-  uidCol.classList.add("col", "uid");
-  uidCol.textContent = uid;
-
-  // 创建新的账号元素
-  var accountCol = document.createElement("div");
-  accountCol.classList.add("col", "account");
-  accountCol.textContent =account;
-
-  // 创建新的密码元素
-  var passwordCol = document.createElement("div");
-  passwordCol.classList.add("col", "password");
-  passwordCol.textContent = "••••••••••••";
-  passwordCol.trueText = password;
-
-  // 创建新的备注元素
-  var tipsCol = document.createElement("div");
-  tipsCol.classList.add("col", "tips");
-  tipsCol.textContent = tips;
-
-  // 创建新的操作按钮元素
-  var actionCol = document.createElement("div");
-  actionCol.classList.add("col", "action");
-  var submitButton = document.createElement("button");
-  submitButton.type = "delete";
-  submitButton.textContent = "{delete}";
-  actionCol.appendChild(submitButton);
+  });
   //翻译
-  if(g_langData){
-    const translator = new Translator(g_langData);
-    translator.translateElement(submitButton);
-  }
-  // 将新的列添加到行中
-  row.appendChild(uidCol);
-  row.appendChild(accountCol);
-  row.appendChild(passwordCol);
-  row.appendChild(tipsCol);
-  row.appendChild(actionCol);
 
-  // 将新的行添加到表格中
-  table.appendChild(row);
+  document.querySelector(".container").appendChild(row);
 }
+//将数据按tbformat中key的顺序传递
+function sortKey(data) {
+  if (typeof data != "object") throw "typeError;sortKey;;";
+  const next = { ...tbFormat };
+  Object.keys(next).forEach((key) => {
+    if (key !== "action") next[key] = data[key] || "";
+  });
+  //添加表头
+  if (!window.headerCreated) {
+    window.headerCreated = true;
+    addHeader(next);
+  }
+  //为后续添加行准备key顺序
+  return next;
+}
+
 //编辑操作
 table.addEventListener(
   "dblclick",
@@ -195,7 +193,14 @@ table.addEventListener(
     }
   }, 1000)
 );
-
+function getRowData(target) {
+  // 找到目标按钮所在的行元素
+  const row = target.closest(".row");
+  // 删除该行元素
+  if (row) {
+    const uid = row.querySelector(".uid").textContent;
+  }
+}
 //保存按钮
 table.addEventListener(
   "click",
@@ -235,7 +240,7 @@ table.addEventListener(
 );
 
 //查询操作
-ipcRenderer.send("query-account", "");
+
 ipcRenderer.on("query-account-reply", (event, arg) => {
   //删除原先元素
   const lines = document.querySelectorAll("div.line");
@@ -245,7 +250,7 @@ ipcRenderer.on("query-account-reply", (event, arg) => {
   const data = arg;
   if (data instanceof Array) {
     for (const d of data) {
-      addRow(d);
+      add(sortKey(d));
     }
   }
 });
@@ -292,10 +297,9 @@ table.addEventListener(
     ) {
       //打开modal
       const randomNum = Math.floor(Math.random() * 900000000 + 100000000);
-      formContainer.querySelector("#uid").value=randomNum;
+      formContainer.querySelector("#uid").value = randomNum;
       toggleModal();
-    }
-   else if (target.getAttribute("type") === "import") {
+    } else if (target.getAttribute("type") === "import") {
       ipcRenderer.send("import-account", "");
     }
   }, 1000)
@@ -307,10 +311,10 @@ formOverlay.addEventListener("click", (event) => {
 });
 
 ipcRenderer.on("create-account-reply", (event, arg) => {
-  const { success, message,account,password, uid,tips } = arg;
+  const { success, message, uid } = arg;
   if (success === true) {
     Notification.getInstance().shoWithUid(uid, "success", "创建成功");
-    addRow({ password,account, uid,tips });
+    add(sortKey(arg));
     toggleModal();
   } else {
     Notification.getInstance().shoWithUid(uid, "error", "创建失败", message);
@@ -326,27 +330,29 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
       let index = 0;
       const addRowAsync = () => {
         if (index < accounts.length) {
-          addRow(accounts[index]);
+          add(accounts[index]);
           index++;
           setTimeout(addRowAsync, 100);
         }
       };
       addRowAsync();
     }
-    
   } else {
-    Notification.getInstance().show("导入失败\m"+message, "error");
+    Notification.getInstance().show("导入失败m" + message, "error");
   }
 });
-let g_langData;
+
 //翻译
-// 发送消息给主进程请求语言数据
-ipcRenderer.send("get-lang-data",{lang:navigator.language});
 ipcRenderer.on("get-lang-data-reply", (e, arg) => {
   const { success, langData } = arg;
   if (success === true) {
-    g_langData=langData;
-    const translator = new Translator(langData);
-    translator.translatePage();
+    window.g_langData = langData;
+    //翻译默认
+    new Translator(window.g_langData).translatePage();
   }
 });
+(() => {
+  ipcRenderer.send("get-lang-data", { lang: navigator.language });
+
+  ipcRenderer.send("query-account", "");
+})();

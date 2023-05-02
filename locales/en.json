@@ -18,7 +18,7 @@
   "mainpage": "Homepage",
   "import": "Import",
   "SaveDoc": "Store",
-  "operator": "Operator",
+  "action": "Action",
   "delete": "Delete",
   "placeholderUid": "A 9-digit UID consisting of only numbers",
   "Administrator": "",
