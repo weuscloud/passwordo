@@ -27,5 +27,6 @@
   "placeholderTips": "可选，100字以下。",
   "tipshelper": "备注功能字数上限400字。",
   "modifyhelper0":"双击相应内容以修改,删除、修改账号完毕后务必",
-  "modifyhelper1":"点击存档按钮保存."
+  "modifyhelper1":"点击存档按钮保存.",
+  "ClearReg":"清除账号"
 }

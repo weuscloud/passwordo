@@ -101,6 +101,8 @@ menu.addEventListener(
       Looper.isLoop = !Looper.isLoop;
     } else if (target.classList.contains("manage")) {
       ipcRenderer.send("go-to", "manage");
+    }else if(target.classList.contains("cleareg")){
+      ipcRenderer.send("cleareg", "");
     }
   }, 100)
 );
@@ -126,9 +128,12 @@ ipcRenderer.on("query-uid-reply", (event, arg) => {
 ipcRenderer.send("get-lang-data",{lang:navigator.language});
 ipcRenderer.on("get-lang-data-reply", (e, arg) => {
   const { success, langData } = arg;
-  console.log(success);
   if (success === true) {
     const translator = new Translator(langData);
     translator.translatePage();
   }
 });
+ipcRenderer.on("cleareg-reply", (e, arg) => {
+  const {success,message}=arg;
+  Notification.getInstance().show(message, success?"success":"error");
+})

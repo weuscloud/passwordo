@@ -29,14 +29,16 @@ body {
   min-width: 160px;
   background-color: #2196F3;
   color: white;
- 
+
   border: none;
   cursor: pointer;
 }
+
 /* 隐藏滚动条 */
 ::-webkit-scrollbar {
   display: none;
 }
+
 .dropdown-items {
   position: absolute;
   background-color: #f1f1f1;
@@ -59,30 +61,38 @@ body {
 .dropdown:hover .dropdown-items {
   display: block;
 }
-.copy{
+
+.copy {
   text-align: center;
   background-color: #2196F3;
   color: white;
-  margin: 0 10px;
   padding: 10px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 18px;
 }
-.copy:hover{
-background-color: #1677ff;
+
+.copy:hover {
+  background-color: #1677ff;
 }
-.is-loop{
+
+.is-loop {
   background-color: #73d13d;
 }
-.is-loop:hover{
+
+.is-loop:hover {
   background-color: #389e0d;
 }
-.helper{
+
+.helper {
   width: 100%;
   margin-top: 10px;
   background-color: #f0f0f0;
   padding: 5px;
   box-sizing: border-box;
   border-radius: 4px;
+}
+
+.cleareg {
+  background-color: #ff4d4f;
 }
