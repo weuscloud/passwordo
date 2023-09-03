@@ -27,5 +27,6 @@
   "placeholderTips": "",
   "tipshelper": "The maximum character limit for the remark function is 400 words.",
   "modifyhelper0": "Double-click the corresponding content to modify or delete. After modifying the account, be sure to ",
-  "modifyhelper1": "Click the Store button to archive the changes."
+  "modifyhelper1": "Click the Store button to archive the changes.",
+  "ClearReg":"CLEAR ACCOUNT(ADMIN)"
 }
