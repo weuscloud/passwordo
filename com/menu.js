@@ -1,36 +1,37 @@
-const { Menu, app } = require('electron');
-
+const { Menu, ipcMain, app } = require('electron');
+const { SingleWindow, getWindow } = require("./WindowMgr");
 const template = [
-  {
-    label: 'Help',
-    submenu: [
-      {
-        label: 'About',
-        click: function () {
-          // handle about click
-        }
-      }
-    ]
-  },
   {
     label: 'Language',
     submenu: [
       {
         label: 'English',
         type: 'radio',
-        checked: true,
+        checked:false,
         click: function () {
           // handle English click
+          global._lang = 'en-US'
+          SingleWindow(global.windowName);
         }
       },
       {
-        label: '中文',
+        label: '简体中文',
         type: 'radio',
+        checked: false,
         click: function () {
           // handle Chinese click
+          global._lang = 'zh-CN'
+          SingleWindow(global.windowName);
         }
       }
     ]
+  },
+  {
+    label: 'About',
+    click: function () {
+      // handle about click
+      getWindow(global.windowName).webContents.toggleDevTools();
+    }
   }
 ];
 
@@ -38,9 +39,5 @@ const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
 
 app.on('activate', function () {
-  if (process.platform === 'darwin') {
-    if (Menu.getApplicationMenu() === null) {
-      Menu.setApplicationMenu(menu);
-    }
-  }
+  Menu.setApplicationMenu(menu);
 });

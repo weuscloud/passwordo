@@ -1,6 +1,7 @@
 const { ipcRenderer } = require("electron");
 class Translator {
   constructor(langData) {
+
     this.langData = {};
     for (const [key, value] of Object.entries(langData)) {
       this.langData[key.toLowerCase()] = value;
@@ -68,4 +69,14 @@ class Translator {
     this.translateElement(document);
   }
 }
+ipcRenderer.on("get-lang-data-reply", (e, arg) => {
+  const { success, langData } = arg;
+  if (success === true) {
+    window.g_langData = langData;
+    if (window._innerHtml)
+    document.body.innerHTML = window._innerHtml;
+    new Translator(window.g_langData).translatePage();
+  }
+});
+ipcRenderer.send("get-lang-data", { lang: navigator.language });
 module.exports = Translator;

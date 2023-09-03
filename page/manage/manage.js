@@ -341,18 +341,4 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
     Notification.getInstance().show("导入失败m" + message, "error");
   }
 });
-
-//翻译
-ipcRenderer.on("get-lang-data-reply", (e, arg) => {
-  const { success, langData } = arg;
-  if (success === true) {
-    window.g_langData = langData;
-    //翻译默认
-    new Translator(window.g_langData).translatePage();
-  }
-});
-(() => {
-  ipcRenderer.send("get-lang-data", { lang: navigator.language });
-
-  ipcRenderer.send("query-account", "");
-})();
+ipcRenderer.send("query-account", "");

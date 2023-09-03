@@ -3,11 +3,13 @@ const path = require("path");
 let mgr = {};
 function createWindow(name, options) {
   // 创建一个新窗口，并将其保存到 `mgr` 对象中
+  if(getWindow(name) instanceof BrowserWindow){
+    mgr[name].close();
+    delete mgr.name;
+  }else{
+    global.windowName=name;
+  }
   mgr[name] = new BrowserWindow(options);
-  // 当窗口关闭时，将其从 `mgr` 对象中移除
-  mgr[name].on("closed", () => {
-    mgr[name] = null;
-  });
 }
 function loadFile(name, filename) {
   // 加载一个页面
@@ -26,14 +28,10 @@ function onClose(name, callback) {
 }
 function SingleWindow(windowName) {
   if (typeof windowName !== "string") return;
-  if (
-    mgr[global.windowName] &&
-    mgr[global.windowName] instanceof BrowserWindow
-  ) {
-    mgr[global.windowName].close();
-    mgr[global.windowName] = null;
-  }
-  global.windowName=windowName;
+  Object.keys(mgr).every((name)=>{
+    mgr[name].close();
+    delete mgr[name];
+  })
   createWindow(windowName, {
     width: 1000,
     height: 800,

@@ -69,15 +69,3 @@ ipcRenderer.on("select-file-reply", (event, { fileName }) => {
   }
 });
 
-//翻译
-// 发送消息给主进程请求语言数据
-ipcRenderer.send("get-lang-data",{lang:navigator.language});
-ipcRenderer.on("get-lang-data-reply", (e, arg) => {
- 
-  const { success, langData } = arg;
-  console.log(success)
-  if (success === true) {
-    const translator = new Translator(langData);
-    translator.translatePage();
-  }
-});

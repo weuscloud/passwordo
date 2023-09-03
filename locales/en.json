@@ -5,8 +5,8 @@
   "password": "Password",
   "submit": "Submit",
   "AccountLooping": "Automatic switch",
-  "CopyAccount": "Copy password",
-  "CopyPassword": "Copy account",
+  "CopyAccount": "Copy account",
+  "CopyPassword": "Copy password",
   "ManagePage": "Management page",
   "InstructionOfMain": "Please select the UID for the first-time use. After enabling the loop, the password will be copied and the system will automatically switch to the next account.",
   "usage": "Usage",
@@ -28,5 +28,5 @@
   "tipshelper": "The maximum character limit for the remark function is 400 words.",
   "modifyhelper0": "Double-click the corresponding content to modify or delete. After modifying the account, be sure to ",
   "modifyhelper1": "Click the Store button to archive the changes.",
-  "ClearReg":"CLEAR ACCOUNT(ADMIN)"
+  "ClearReg":"SIGN OUT GENSHIN IMPACT(ADMIN)"
 }
