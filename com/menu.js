@@ -7,7 +7,7 @@ const template = [
       {
         label: 'English',
         type: 'radio',
-        checked:false,
+        checked: false,
         click: function () {
           // handle English click
           global._lang = 'en-US'
@@ -27,7 +27,19 @@ const template = [
     ]
   },
   {
-    label: 'About',
+    label: 'Settings',
+    submenu: [
+      {
+        label: '设置原神安装路径',
+        type: 'normal',
+        click: function () {
+
+        }
+      }
+    ]
+  },
+  {
+    label: 'Debug',
     click: function () {
       // handle about click
       getWindow(global.windowName).webContents.toggleDevTools();

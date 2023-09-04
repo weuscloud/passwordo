@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>passwordDo</title>
-    <link rel="stylesheet" href="main.css" />
-  </head>
-  <body>
-    <div class="container">
-      <div class="menu">
-        <div class="copy dropdown">
-          <div class="dropdown-btn">UID</div>
-          <div class="dropdown-items"></div>
-        </div>
-        <div class="copy loop">{AccountLooping}</div>
-        <div class="copy account">{CopyAccount}</div>
-        <div class="copy password">{CopyPassword}</div>
-        <div class="copy manage">{ManagePage}</div>
-        <div class="copy cleareg">{ClearReg}</div>
-      </div>
-      
-      <div class="helper">
-        {tips}:<br />
-        <div>{InstructionOfMain}</div>
-      </div>
-    </div>
 
-    <script src="main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>passwordDo</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="menu menu0">
+      <div class="copy dropdown">
+        <div class="dropdown-btn">UID</div>
+        <div class="dropdown-items"></div>
+      </div>
+      <div class="copy loop">{AccountLooping}</div>
+      <div class="copy account">{CopyAccount}</div>
+      <div class="copy password">{CopyPassword}</div>
+      <div class="copy manage">{ManagePage}</div>
+    
+    </div>
+    <div class="menu menu1">
+      <div class="copy cleareg">{ClearReg}</div>
+      <div class="copy startgenshin">{StartGenshin}</div>
+    </div>
+    <div class="helper">
+      {tips}:<br />
+      <div>{InstructionOfMain}</div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+
 </html>

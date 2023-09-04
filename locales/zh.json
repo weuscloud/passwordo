@@ -28,5 +28,6 @@
   "tipshelper": "备注功能字数上限400字。",
   "modifyhelper0":"双击相应内容以修改,删除、修改账号完毕后务必",
   "modifyhelper1":"点击存档按钮保存.",
-  "ClearReg":"登出原神(需管理员权限)"
+  "ClearReg":"原神登出(需管理员权限)",
+  "startgenshin":"原神启动！"
 }

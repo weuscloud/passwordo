@@ -2,6 +2,7 @@ const { ipcRenderer } = require("electron");
 const { debounce } = require("../../com/throttle");
 const Notification = require("../com/notification");
 const Translator = require("../com/Translator");
+
 function addItems(content) {
   if (!content instanceof Array) {
     Notification.getInstance().show("Load failed", "error");
@@ -62,55 +63,85 @@ Object.defineProperty(Looper, "isAccount", {
   configurable: true,
 });
 
-const menu = document.querySelector(".menu");
-function loopItems() {}
-menu.addEventListener(
-  "click",
-  debounce(function (event) {
-    const target = event.target;
-    // 如果点击的是下拉列表中的某个选项
-    if (target.classList.contains("dropdown-item")) {
-      // 处理选项被点击后的逻辑
-      Looper.uid = target.innerText;
-      //更新显示uid内容
-      document.querySelector(".dropdown-btn").textContent = Looper.uid;
-      //更新当前元素下标
-      document.querySelector(".dropdown-btn").idx = target.idx;
-    } else if (target.classList.contains("account")) {
-      if (Looper.uid) {
-        Looper.isAccount = true;
-        ipcRenderer.send("clipboard-copy", {
-          uid: Looper.uid,
-          isAccount: Looper.isAccount,
-        });
-      } else {
-        Notification.getInstance().show("请选择账号!", "warning");
-      }
-    } else if (target.classList.contains("password")) {
-      if (Looper.uid) {
-        Looper.isAccount = false;
-        ipcRenderer.send("clipboard-copy", {
-          uid: Looper.uid,
-          isAccount: Looper.isAccount,
-        });
-      } else {
-        Notification.getInstance().show("请选择账号!", "warning");
-      }
-    } else if (target.classList.contains("loop")) {
-      target.classList.toggle("is-loop");
-      Looper.isLoop = !Looper.isLoop;
-    } else if (target.classList.contains("manage")) {
-      ipcRenderer.send("go-to", "manage");
-    }else if(target.classList.contains("cleareg")){
-      ipcRenderer.send("cleareg", "");
+const menu0 = document.querySelector(".menu0");
+menu0.addEventListener("click", debounce(handleMenuClick, 100));
+
+const menu1 = document.querySelector(".menu1");
+menu1.addEventListener("click", debounce(handleMenuClick, 100));
+
+const classToHandlerMap = {
+  "dropdown-item": handleDropdownItemClick,
+  "account": handleAccountClick,
+  "password": handlePasswordClick,
+  "loop": handleLoopClick,
+  "manage": handleManageClick,
+  "cleareg": handleClearRegClick,
+  "startgenshin": handlerStartGenshin,
+};
+
+function handlerStartGenshin(event) {
+  ipcRenderer.send('start-genshin','');
+}
+
+function handleMenuClick(event) {
+  const target = event.target;
+
+  target.classList.forEach(className => {
+    const handler = classToHandlerMap[className];
+    //console.log('click', className, handler);
+
+    if (handler) {
+      handler(target);
     }
-  }, 100)
-);
+  });
+}
+function handleDropdownItemClick(target) {
+  Looper.uid = target.innerText;
+  document.querySelector(".dropdown-btn").textContent = Looper.uid;
+  document.querySelector(".dropdown-btn").idx = target.idx;
+}
+
+function handleAccountClick() {
+  if (Looper.uid) {
+    Looper.isAccount = true;
+    ipcRenderer.send("clipboard-copy", {
+      uid: Looper.uid,
+      isAccount: Looper.isAccount,
+    });
+  } else {
+    Notification.getInstance().show("请选择账号!", "warning");
+  }
+}
+
+function handlePasswordClick() {
+  if (Looper.uid) {
+    Looper.isAccount = false;
+    ipcRenderer.send("clipboard-copy", {
+      uid: Looper.uid,
+      isAccount: Looper.isAccount,
+    });
+  } else {
+    Notification.getInstance().show("请选择账号!", "warning");
+  }
+}
+
+function handleLoopClick(target) {
+  target.classList.toggle("is-loop");
+  Looper.isLoop = !Looper.isLoop;
+}
+
+function handleManageClick() {
+  ipcRenderer.send("go-to", "manage");
+}
+
+function handleClearRegClick() {
+  ipcRenderer.send("cleareg", "");
+}
+
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
   const { success, isAccount, uid } = arg;
-  let message = `复制${isAccount ? "账号" : "密码"}${
-    success ? "成功" : "失败"
-  }\nuid:${uid}`;
+  let message = `复制${isAccount ? "账号" : "密码"}${success ? "成功" : "失败"
+    }\nuid:${uid}`;
   if (success === true) {
     Notification.getInstance().show(message, "success");
   } else {
@@ -127,6 +158,6 @@ ipcRenderer.on("query-uid-reply", (event, arg) => {
 // 发送消息给主进程请求语言数据
 
 ipcRenderer.on("cleareg-reply", (e, arg) => {
-  const {success,message}=arg;
-  Notification.getInstance().show(message, success?"success":"error");
+  const { success, message } = arg;
+  Notification.getInstance().show(message, success ? "success" : "error");
 })

@@ -1,12 +1,12 @@
-const { ipcMain, clipboard } = require("electron");
+const { ipcMain,dialog, clipboard } = require("electron");
 const { sendMessage } = require("./WindowMgr");
 const AccountManager = require("./AccountManager");
-const child_process = require("child_process");
+const { exec } = require('child_process');
 const keyPath = `HKEY_CURRENT_USER\\Software\\miHoYo\\原神`
 function deleteKey(keypath) {
   return new Promise((R, J) => {
     try {
-      const res = child_process.exec(`reg delete ${keypath} /f`);
+      const res = exec(`reg delete ${keypath} /f`);
       R(res)
     } catch (error) {
       J(error)
@@ -33,7 +33,7 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
   }
 });
 ipcMain.on("cleareg", (ev, arg) => {
-  child_process.exec('NET SESSION', function (err, so, se) {
+  exec('NET SESSION', function (err, so, se) {
     if (se.length !== 0) {
       sendMessage("main", "cleareg-reply", { success: false, message: `删除失败:无管理员权限` });
     } else {
@@ -46,3 +46,80 @@ ipcMain.on("cleareg", (ev, arg) => {
   });
 
 })
+
+
+
+function getYuanInstallPath() {
+  return new Promise((resolve, reject) => {
+    // 要查找的应用程序名称
+    const targetApplication = 'Genshin Impact';
+
+    // 构建查询注册表的命令
+    const regQueryCommand = `reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /f "${targetApplication}"`;
+
+    // 执行命令
+    exec(regQueryCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`执行命令时出错: ${error.message}`);
+        reject(error);
+        return;
+      }
+
+      // 分割查询结果为行数组
+      const lines = stdout.split('\n');
+
+      // 遍历每一行以查找匹配项
+      lines.forEach(line => {
+        if (line.includes('InstallPath')) {
+          const InstallPath = line.split('    ')[3];
+
+          const appName = InstallPath.substring(InstallPath.lastIndexOf('\\') + 1);
+          if (appName.trim() === targetApplication.trim()) {
+            resolve(InstallPath+'\\Genshin Impact Game\\yuanshen.exe');
+          }
+        }
+      });
+
+      // 如果未找到匹配项，也解析为 null
+      resolve(null);
+    });
+  });
+}
+function openDialog2getYuanPath() {
+  // 如果未找到应用程序的安装路径，弹出文件选择对话框
+  dialog.showOpenDialog({
+    title: '选择 Genshin Impact EXE 文件',
+    properties: ['openFile'],
+    filters: [{ name: 'EXE 文件', extensions: ['exe'] }],
+  }).then(result => {
+    if (!result.canceled && result.filePaths.length > 0) {
+      const exePath = result.filePaths[0];
+      // 执行命令来打开用户选择的 EXE 文件
+      openYuanshen(exePath);
+    } else {
+    }
+  }).catch(error => {
+    console.error(`发生错误: ${error.message}`);
+  });
+}
+ipcMain.on('start-genshin', (ev, arg) => {
+  getYuanInstallPath()
+    .then(installPath => {
+      if (installPath) {
+        openYuanshen(installPath);
+      } else {
+        openDialog2getYuanPath();
+      }
+    })
+    .catch(error => {
+     openDialog2getYuanPath();
+    });
+})
+function openYuanshen(exePath) {
+  exec(`start "" "${exePath}"`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`无法打开程序: ${error.message}`);
+      return;
+    }
+  });
+}
