@@ -1,8 +1,7 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const log = require("./log");
-const { app } = require("electron");
-const path = require("path");
+const {encryptedFileName}=require('./file');
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -24,7 +23,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName = path.join(app.getPath("userData"), "passwordo.accounts");
+  encryptedFileName =encryptedFileName;
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();
@@ -56,7 +55,7 @@ class AccountManager {
       decipher.final();
       return true;
     } catch (error) {
-      log("login failed!");
+      log('INFO',__filename,"login failed!");
       return false;
     }
   }
@@ -124,7 +123,7 @@ class AccountManager {
         }
       }
     } catch (error) {
-      log("error", "ADMIN PASSWORD NOT MATCH");
+      log("ERROR",__filename, "ADMIN PASSWORD NOT MATCH");
       return "ADMIN PASSWORD NOT MATCH";
     }
     return "OK";
@@ -133,23 +132,23 @@ class AccountManager {
   addAccount({ uid, account, password, tips }) {
     // 验证参数
     if (!this.validateUid(uid)) {
-      log("Invalid uid", uid);
+      log('ERROR',__filename,"Invalid uid", uid);
       return "Invalid uid";
     }
     if (!this.validateAccount(account)) {
-      log("Invalid account", uid);
+      log('ERROR',__filename,"Invalid account", uid);
       return "Invalid account";
     }
     if (!this.validatePassword(password)) {
-      log("Invalid password", uid);
+      log('ERROR',__filename,"Invalid password", uid);
       return "Invalid password";
     }
     if (!this.validTips(tips)) {
-      log("Invalid tips", uid);
+      log('ERROR',__filename,"Invalid tips", uid);
       return "Invalid tips";
     }
     if (this.findAccount(uid)) {
-      log("Account existed", uid);
+      log('ERROR',__filename,"Account existed", uid);
       return "Account existed";
     }
     // 创建账号对象并添加到数组中
@@ -160,23 +159,6 @@ class AccountManager {
   }
   storeToFile() {
     let filepath = this.encryptedFileName;
-    try {
-      // 检查文件是否存在
-      fs.accessSync(filepath, fs.constants.F_OK);
-
-      // 文件存在，什么也不做
-      log("File already exists:", filepath);
-    } catch (error) {
-      // 文件不存在，尝试创建文件
-      try {
-        fs.writeFileSync(filepath, "");
-        log("File created successfully:", filepath);
-      } catch (error) {
-        // 权限不足，退出
-        log("Failed to create file:", error);
-        return "FILE ACCESS DENIED:\n" + filepath;
-      }
-    }
     if (!global.login.passwordHash === true) return "PASSWORD NOT EXISTED";
     let data = "";
     for (const acc of this.accounts) {
@@ -203,7 +185,7 @@ class AccountManager {
         if (err) throw err;
       });
     } catch (error) {
-      log("WRITE FILE  DENIED");
+      log('FATAL',__filename,"WRITE FILE  DENIED");
       return "WRITE FILE  DENIED:\n" + this.encryptedFileName;
     }
     return "OK";
@@ -214,13 +196,12 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log("Account not found");
+      log('WARNING',__filename,"Account not found");
       return false;
     }
 
     // 从数组中删除账号对象
     this.accounts.splice(index, 1);
-    log("Account deleted:", uid);
     return true;
   }
   //同时更新账号和密码
@@ -228,28 +209,24 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log("Account not found", uid);
+      log('ERROR',__filename,"Account not found", uid);
       return "Account not found";
     }
 
     // 验证新密码是否符合要求
     if (!this.validatePassword(password)) {
-      log("Invalid password for", uid);
       return "Invalid password for";
     }
     // 验证新账号名是否符合要求
     if (!this.validateAccount(account)) {
-      log("Invalid account for", uid);
       return "Invalid account for";
     }
     if (!this.validTips(tips)) {
-      log("Invalid tips for", uid);
       return "Invalid tips for";
     }
     this.accounts[index].account = account;
     this.accounts[index].password = password;
     this.accounts[index].tips = tips;
-    log("Password and Account updated for ", uid);
     return "OK";
   }
   // 更新账号密码
@@ -263,13 +240,11 @@ class AccountManager {
 
     // 验证新密码是否符合要求
     if (!this.validatePassword(newPassword)) {
-      log("Invalid password", uid);
       return false;
     }
 
     // 更新账号密码
     this.accounts[index].password = newPassword;
-    log("Password updated for account", uid);
     return true;
   }
   //更新账号名
@@ -277,47 +252,40 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log("Account not found", uid);
+      log('ERROR',__filename,"Account not found", uid);
       return false;
     }
 
     // 验证新账号名是否符合要求
     if (!this.validateAccount(newAccount)) {
-      log("Invalid account", uid);
       return false;
     }
 
     // 更新账号名
     this.accounts[index].account = newAccount;
-    log("Password updated for account", uid);
     return true;
   }
   updateTips(uid, newTips) {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log("Account not found", uid);
       return false;
     }
     // 验证新账号名是否符合要求
     if (!this.validTips(newTips)) {
-      log("Invalid Tips", uid);
       return false;
     }
     // 更新账号名
     this.accounts[index].tips = newTips;
-    log("Tips updated for account", uid);
     return true;
   }
   // 查找账号
   findAccount(uid) {
     const account = this.accounts.find((account) => account.uid === uid);
     if (!account) {
-      log("Account not found");
+      log('ERROR',__filename,"Account not found");
       return null;
     }
-
-    log("Account found:", account.uid);
     return account;
   }
 

@@ -1,7 +1,11 @@
-const { ipcMain,dialog, clipboard } = require("electron");
-const { sendMessage } = require("./WindowMgr");
+const { ipcMain, dialog, clipboard } = require("electron");
+const { sendMessage, getWindow } = require("./WindowMgr");
 const AccountManager = require("./AccountManager");
+const fs = require('fs');
 const { exec } = require('child_process');
+const JsonFileHandler = require('./JsonFileHandler')
+const { iniFileName } = require('./file');
+const log = require("./log");
 const keyPath = `HKEY_CURRENT_USER\\Software\\miHoYo\\原神`
 function deleteKey(keypath) {
   return new Promise((R, J) => {
@@ -48,7 +52,6 @@ ipcMain.on("cleareg", (ev, arg) => {
 })
 
 
-
 function getYuanInstallPath() {
   return new Promise((resolve, reject) => {
     // 要查找的应用程序名称
@@ -75,7 +78,7 @@ function getYuanInstallPath() {
 
           const appName = InstallPath.substring(InstallPath.lastIndexOf('\\') + 1);
           if (appName.trim() === targetApplication.trim()) {
-            resolve(InstallPath+'\\Genshin Impact Game\\yuanshen.exe');
+            resolve(`${InstallPath.trim()}\\Genshin Impact Game\\yuanshen.exe`);
           }
         }
       });
@@ -102,18 +105,30 @@ function openDialog2getYuanPath() {
     console.error(`发生错误: ${error.message}`);
   });
 }
+
 ipcMain.on('start-genshin', (ev, arg) => {
-  getYuanInstallPath()
-    .then(installPath => {
-      if (installPath) {
-        openYuanshen(installPath);
-      } else {
-        openDialog2getYuanPath();
-      }
+
+  const jsonHandler = new JsonFileHandler(iniFileName); // 假设配置文件为 config.json
+
+  // 读取特定属性的值
+  jsonHandler.getValue('GenshinInstallPath')
+    .then((genshinPath) => {
+      log('INFO', __filename, genshinPath);
+      openYuanshen(genshinPath);
     })
-    .catch(error => {
-     openDialog2getYuanPath();
+    .catch((err) => {
+      log('ERROR', __filename, 'EMPTYED GENSHIN INSTALL PATH ', err);
+      getYuanInstallPath().then(INSTALLPATH => {
+        if (INSTALLPATH) {
+          jsonHandler.update('GenshinInstallPath', INSTALLPATH);
+          openYuanshen(INSTALLPATH);
+        } else {
+          log('ERROR', __filename, 'GET GENSHIN INSTALL PATH NULL');
+          openDialog2getYuanPath();
+        }
+      })
     });
+
 })
 function openYuanshen(exePath) {
   exec(`start "" "${exePath}"`, (error, stdout, stderr) => {
@@ -121,5 +136,6 @@ function openYuanshen(exePath) {
       console.error(`无法打开程序: ${error.message}`);
       return;
     }
+    getWindow('main').minimize();
   });
 }

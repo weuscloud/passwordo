@@ -64,10 +64,10 @@ Object.defineProperty(Looper, "isAccount", {
 });
 
 const menu0 = document.querySelector(".menu0");
-menu0.addEventListener("click", debounce(handleMenuClick, 100));
+menu0.addEventListener("click", debounce(handleMenuClick, 200));
 
 const menu1 = document.querySelector(".menu1");
-menu1.addEventListener("click", debounce(handleMenuClick, 100));
+menu1.addEventListener("click", debounce(handleMenuClick, 200));
 
 const classToHandlerMap = {
   "dropdown-item": handleDropdownItemClick,
