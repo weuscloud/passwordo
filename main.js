@@ -1,10 +1,8 @@
 // main.js
-require('./com/global');
 const { app, ipcMain, Menu } = require("electron");
-require('dotenv').config();
-require('./com/menu');
 const { SingleWindow } = require("./com/WindowMgr");
-
+require('./com/global');
+require('./com/menu');
 // 应用程序启动时创建窗口
 app.on("ready", () => {
   //globalShortcut.unregisterAll();

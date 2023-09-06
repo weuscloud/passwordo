@@ -7,6 +7,10 @@ const JsonFileHandler = require('./JsonFileHandler')
 const { iniFileName } = require('./file');
 const log = require("./log");
 const keyPath = `HKEY_CURRENT_USER\\Software\\miHoYo\\原神`
+const sudo = require('sudo-prompt');
+const options = {
+  name: 'Electron'
+};
 function deleteKey(keypath) {
   return new Promise((R, J) => {
     try {
@@ -37,19 +41,19 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
   }
 });
 ipcMain.on("cleareg", (ev, arg) => {
-
-  exec('NET SESSION', function (err, so, se) {
-    if (se.length !== 0) {
-      sendMessage("main", "cleareg-reply", { success: false, message: `删除失败:无管理员权限` });
-    } else {
+  sudo.exec('echo hello', options,
+    function (error, stdout, stderr) {
+      if (error) {
+        log('ERROR',__filename,'PERMISSION DENIED.');
+        return;
+      }
       deleteKey(keyPath).then(() => {
         sendMessage("main", "cleareg-reply", { success: true, message: "删除成功" });
       }).catch((ERR) => {
         sendMessage("main", "cleareg-reply", { success: false, message: `删除失败:\n${ERR}` });
       });
     }
-  });
-
+  );
 })
 
 
@@ -116,7 +120,6 @@ ipcMain.on('start-genshin', (ev, arg) => {
   // 读取特定属性的值
   jsonHandler.getValue('GenshinInstallPath')
     .then((genshinPath) => {
-      log('DEBUG', __filename, `jsonHandler.getValue('GenshinInstallPath')--> `, genshinPath);
       openYuanshen(genshinPath);
     })
     .catch((err) => {
@@ -146,6 +149,6 @@ function openYuanshen(exePath) {
     }
   });
 }
-module.exports={
+module.exports = {
   openDialog2getYuanPath
 }
