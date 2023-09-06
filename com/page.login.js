@@ -15,7 +15,6 @@ ipcMain.on("login-form-submission", (event, arg) => {
     });
   } else {
     global.login = {
-      success: true,
       passwordHash: crypto.createHash("sha256").update(password),
     };
     //跳转至主窗口

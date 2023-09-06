@@ -1,7 +1,7 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const log = require("./log");
-const {encryptedFileName}=require('./file');
+const { encryptedFileName } = require('./file');
 // 定义加密函数
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
@@ -23,7 +23,7 @@ function decrypt(buffer, key) {
 }
 class AccountManager {
   accounts = [];
-  encryptedFileName =encryptedFileName;
+  encryptedFileName = encryptedFileName;
   static getInstance() {
     if (!AccountManager.instance) {
       AccountManager.instance = new AccountManager();
@@ -37,7 +37,7 @@ class AccountManager {
     } catch (error) {
       return false;
     }
-    this.encryptedFileName=path;
+    this.encryptedFileName = path;
     return true;
   }
   checkPassword(password) {
@@ -55,7 +55,7 @@ class AccountManager {
       decipher.final();
       return true;
     } catch (error) {
-      log('INFO',__filename,"登录失败。");
+      log('INFO', __filename, "登录失败。");
       return false;
     }
   }
@@ -78,15 +78,14 @@ class AccountManager {
       return "FILE NOT EXISTED";
     }
 
-    if (!global.login.passwordHash === true) "ADMIN PASSWORD NOT EXISTED";
+    if (!global.login.passwordHash)return "ADMIN PASSWORD NOT EXISTED";
     let key;
-    if (global.login.digestKey) {
-      key = global.login.digestKey;
-    } else {
+
+    if (!global.login.digestKey) {
       global.login.digestKey = global.login.passwordHash.digest();
-      key = global.login.digestKey;
     }
 
+    key = global.login.digestKey;
     try {
       const inputFile = fs.readFileSync(fileName);
       const inputStr = decrypt(inputFile, key).toString();
@@ -123,7 +122,7 @@ class AccountManager {
         }
       }
     } catch (error) {
-      log("ERROR",__filename, "保密文件密码不正确。");
+      log("ERROR", __filename, "保密文件密码不正确。");
       return "ADMIN PASSWORD NOT MATCH";
     }
     return "OK";
@@ -132,23 +131,18 @@ class AccountManager {
   addAccount({ uid, account, password, tips }) {
     // 验证参数
     if (!this.validateUid(uid)) {
-      log('ERROR',__filename,"Invalid uid", uid);
       return "Invalid uid";
     }
     if (!this.validateAccount(account)) {
-      log('ERROR',__filename,"Invalid account", uid);
       return "Invalid account";
     }
     if (!this.validatePassword(password)) {
-      log('ERROR',__filename,"Invalid password", uid);
       return "Invalid password";
     }
     if (!this.validTips(tips)) {
-      log('ERROR',__filename,"Invalid tips", uid);
       return "Invalid tips";
     }
     if (this.findAccount(uid)) {
-      log('ERROR',__filename,"Account existed", uid);
       return "Account existed";
     }
     // 创建账号对象并添加到数组中
@@ -185,7 +179,7 @@ class AccountManager {
         if (err) throw err;
       });
     } catch (error) {
-      log('FATAL',__filename,"保密文件写权限不足");
+      log('FATAL', __filename, "保密文件写权限不足");
       return "WRITE FILE  DENIED:\n" + this.encryptedFileName;
     }
     return "OK";
@@ -196,7 +190,7 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log('WARNING',__filename,"Account not found");
+      log('WARNING', __filename, "Account not found");
       return false;
     }
 
@@ -209,7 +203,7 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log('ERROR',__filename,"Account not found", uid);
+      log('ERROR', __filename, "Account not found", uid);
       return "Account not found";
     }
 
@@ -221,6 +215,7 @@ class AccountManager {
     if (!this.validateAccount(account)) {
       return "Invalid account for";
     }
+    //验证新备注是否符合要求
     if (!this.validTips(tips)) {
       return "Invalid tips for";
     }
@@ -252,7 +247,7 @@ class AccountManager {
     // 找到账号对象的索引
     const index = this.accounts.findIndex((account) => account.uid === uid);
     if (index === -1) {
-      log('ERROR',__filename,"Account not found", uid);
+      log('ERROR', __filename, "Account not found", uid);
       return false;
     }
 
@@ -283,7 +278,7 @@ class AccountManager {
   findAccount(uid) {
     const account = this.accounts.find((account) => account.uid === uid);
     if (!account) {
-      log('ERROR',__filename,"Account not found");
+      log('ERROR', __filename, "Account not found");
       return null;
     }
     return account;

@@ -41,6 +41,7 @@ async function main() {
 const encryptedFileName = path.join(app.getPath("userData"), "passwordo.accounts");
 const iniFileName = path.join(app.getPath("userData"), "user.json");
 const logFileName = path.join(app.getPath('userData'), `passwordo.log`);
+
 const filesToCheck = [
   { path: encryptedFileName },
   { path: iniFileName},
