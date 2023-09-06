@@ -37,7 +37,7 @@ function match(str, data) {
       if (value !== undefined) {
         str = str.replace(match, value);
       } else {
-        str = str.replace(/\{([^{}]+)\}/g, key);
+        str = str.replace(/\{(.+?)\}/, key);
       }
     });
   }
