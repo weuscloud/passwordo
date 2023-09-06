@@ -22,9 +22,9 @@ class FileOperation {
   async createEmptyFile() {
     try {
       await fs.writeFile(this.filePath, this.options.defaultContent, { encoding: this.options.encoding });
-      log('INFO','file.js',`${this.filePath} 已创建`);
+      log('INFO','file.js',`已创建空白文件${this.filePath} `);
     } catch (err) {
-      console.error(`无法创建文件 ${this.filePath}: ${err.message}`);
+      console.error(`无法创建空白文件 ${this.filePath}: ${err.message}`);
     }
   }
 }
@@ -50,7 +50,7 @@ const filesToCheck = [
 ];
 if (!global.fileInitialized) {
   main().catch((err) => {
-    log('FATAL','file.js','err happened:', err);
+    log('FATAL','file.js','所需文件初始化错误', err);
     exit(-1);
   });
   global.fileInitialized = true

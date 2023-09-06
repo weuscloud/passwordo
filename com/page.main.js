@@ -44,7 +44,7 @@ ipcMain.on("cleareg", (ev, arg) => {
   sudo.exec('echo hello', options,
     function (error, stdout, stderr) {
       if (error) {
-        log('ERROR',__filename,'PERMISSION DENIED.');
+        log('ERROR', __filename, '注册表权限不足');
         return;
       }
       deleteKey(keyPath).then(() => {
@@ -105,7 +105,7 @@ function openDialog2getYuanPath() {
       // 执行命令来打开用户选择的 EXE 文件
       const jsonHandler = new JsonFileHandler(iniFileName);
       jsonHandler.update('GenshinInstallPath', exePath);
-      log('INFO', __filename, `GenshinInstallPath UPDATED-->`, exePath);
+      log('INFO', __filename, `更新原神安装路径:`, exePath);
     } else {
     }
   }).catch(error => {
@@ -115,36 +115,31 @@ function openDialog2getYuanPath() {
 
 ipcMain.on('start-genshin', (ev, arg) => {
   getWindow('main').minimize();
-  const jsonHandler = new JsonFileHandler(iniFileName);
-
-  // 读取特定属性的值
-  jsonHandler.getValue('GenshinInstallPath')
-    .then((genshinPath) => {
-      openYuanshen(genshinPath);
-    })
-    .catch((err) => {
-      log('ERROR', __filename, 'EMPTYED GENSHIN INSTALL PATH ', err);
-      getYuanInstallPath().then(INSTALLPATH => {
-        if (INSTALLPATH) {
-          jsonHandler.update('GenshinInstallPath', INSTALLPATH);
-          openYuanshen(INSTALLPATH);
-        } else {
-          getWindow('main').restore();
-          log('ERROR', __filename, 'GET GENSHIN INSTALL PATH NULL');
-          openDialog2getYuanPath();
-          jsonHandler.getValue('GenshinInstallPath').then(INSTALLPATH => { openYuanshen(INSTALLPATH); }).catch(err => {
-            log('ERROR', __filename, 'TRY TO RESTART GENSHIN FAILED');
-          })
-
-        }
-      })
-    });
+  getYuanInstallPath().then(INSTALLPATH => {
+    if (INSTALLPATH) {
+      const jsonHandler = new JsonFileHandler(iniFileName);
+      jsonHandler.update('GenshinInstallPath', INSTALLPATH);
+      openYuanshen();
+    } else {
+      getWindow('main').restore();
+      openDialog2getYuanPath();
+      openYuanshen();
+    }
+  })
 
 })
-function openYuanshen(exePath) {
-  exec(`start "" "${exePath}"`, (error, stdout, stderr) => {
+function openYuanshen() {
+  let genshinPath
+  try {
+    const jsonHandler = new JsonFileHandler(iniFileName);
+    genshinPath = jsonHandler.getValue('GenshinInstallPath');
+  } catch (error) {
+    log('ERROR', __filename, '原神安装路径为空！');
+    return;
+  }
+  exec(`start "" "${genshinPath}"`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`无法打开程序: ${error.message}`);
+      log('ERROR', __filename, `无法打开程序: 用户取消!`);
       return;
     }
   });

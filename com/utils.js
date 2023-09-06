@@ -9,7 +9,7 @@ function selectFile() {
 
   if (result && result.length > 0) {
     const filePath = result[0];
-    log('INFO',__filename,"file import path=", filePath);
+    log('INFO',__filename,"导入保密文件-->", filePath);
     return filePath;
   }
 

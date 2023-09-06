@@ -8,54 +8,41 @@ class JsonFileHandler {
 
   // 读取JSON文件
   read() {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this.filePath, 'utf-8', (err, data) => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-            // 文件不存在，返回空对象
-            resolve({});
-          } else {
-            reject(err);
-          }
-        } else {
-          try {
-            const jsonData = JSON.parse(data);
-            resolve(jsonData);
-          } catch (parseErr) {
-            resolve({});
-            log('WARNING',__filename,'user.json文件内容不正确');
-          }
-        }
-      });
-    });
+    try {
+      const data = fs.readFileSync(this.filePath, 'utf-8');
+      try {
+        const jsonData = JSON.parse(data);
+        return jsonData;
+      } catch (parseErr) {
+        log('WARNING', __filename, '配置文件内容不正确');
+        return {};
+      }
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        // 文件不存在，返回空对象
+        return {};
+      } else {
+        throw err;
+      }
+    }
   }
 
   // 写入JSON文件
   write(data) {
-    return new Promise((resolve, reject) => {
-      const jsonString = JSON.stringify(data, null, 2); // 缩进使JSON更易读
-      fs.writeFile(this.filePath, jsonString, 'utf-8', (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    const jsonString = JSON.stringify(data, null, 2); // 缩进使JSON更易读
+    fs.writeFileSync(this.filePath, jsonString, 'utf-8');
   }
 
   // 更新特定属性
   update(propertyName, value) {
-    return this.read()
-      .then((jsonData) => {
-        jsonData[propertyName] = value;
-        return this.write(jsonData);
-      });
+    const jsonData = this.read();
+    jsonData[propertyName] = value;
+    this.write(jsonData);
   }
 
   // 读取特定属性的值
-  async getValue(propertyName) {
-    const jsonData=await this.read()
+  getValue(propertyName) {
+    const jsonData = this.read();
     if (jsonData.hasOwnProperty(propertyName)) {
       return jsonData[propertyName];
     } else {
@@ -63,4 +50,5 @@ class JsonFileHandler {
     }
   }
 }
-module.exports = JsonFileHandler
+
+module.exports = JsonFileHandler;

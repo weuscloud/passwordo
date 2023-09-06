@@ -55,7 +55,7 @@ class AccountManager {
       decipher.final();
       return true;
     } catch (error) {
-      log('INFO',__filename,"login failed!");
+      log('INFO',__filename,"登录失败。");
       return false;
     }
   }
@@ -123,7 +123,7 @@ class AccountManager {
         }
       }
     } catch (error) {
-      log("ERROR",__filename, "ADMIN PASSWORD NOT MATCH");
+      log("ERROR",__filename, "保密文件密码不正确。");
       return "ADMIN PASSWORD NOT MATCH";
     }
     return "OK";
@@ -159,7 +159,7 @@ class AccountManager {
   }
   storeToFile() {
     let filepath = this.encryptedFileName;
-    if (!global.login.passwordHash === true) return "PASSWORD NOT EXISTED";
+    if (!global.login.passwordHash === true) return "保密文件密码不存在。";
     let data = "";
     for (const acc of this.accounts) {
       if (
@@ -185,7 +185,7 @@ class AccountManager {
         if (err) throw err;
       });
     } catch (error) {
-      log('FATAL',__filename,"WRITE FILE  DENIED");
+      log('FATAL',__filename,"保密文件写权限不足");
       return "WRITE FILE  DENIED:\n" + this.encryptedFileName;
     }
     return "OK";
