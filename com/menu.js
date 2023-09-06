@@ -1,5 +1,7 @@
-const { Menu, ipcMain, app } = require('electron');
+const { Menu, app } = require('electron');
 const { SingleWindow, getWindow } = require("./WindowMgr");
+const { openDialog2getYuanPath } = require('./page.main');
+
 const template = [
   {
     label: 'Language',
@@ -23,6 +25,12 @@ const template = [
           global._lang = 'zh-CN'
           SingleWindow(global.windowName);
         }
+      },
+      {
+        label: 'Default',
+        type: 'radio',
+        checked: true,
+        enabled: false, // 将该选项禁用
       }
     ]
   },
@@ -30,10 +38,10 @@ const template = [
     label: 'Settings',
     submenu: [
       {
-        label: '设置原神安装路径',
+        label: 'RESET GENSHIN PATH',
         type: 'normal',
         click: function () {
-
+          openDialog2getYuanPath()
         }
       }
     ]
@@ -53,3 +61,6 @@ Menu.setApplicationMenu(menu);
 app.on('activate', function () {
   Menu.setApplicationMenu(menu);
 });
+module.exports = {
+  menu
+}

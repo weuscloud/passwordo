@@ -37,6 +37,7 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
   }
 });
 ipcMain.on("cleareg", (ev, arg) => {
+
   exec('NET SESSION', function (err, so, se) {
     if (se.length !== 0) {
       sendMessage("main", "cleareg-reply", { success: false, message: `删除失败:无管理员权限` });
@@ -98,7 +99,9 @@ function openDialog2getYuanPath() {
     if (!result.canceled && result.filePaths.length > 0) {
       const exePath = result.filePaths[0];
       // 执行命令来打开用户选择的 EXE 文件
-      openYuanshen(exePath);
+      const jsonHandler = new JsonFileHandler(iniFileName);
+      jsonHandler.update('GenshinInstallPath', exePath);
+      log('INFO', __filename, `GenshinInstallPath UPDATED-->`, exePath);
     } else {
     }
   }).catch(error => {
@@ -107,13 +110,13 @@ function openDialog2getYuanPath() {
 }
 
 ipcMain.on('start-genshin', (ev, arg) => {
-
-  const jsonHandler = new JsonFileHandler(iniFileName); // 假设配置文件为 config.json
+  getWindow('main').minimize();
+  const jsonHandler = new JsonFileHandler(iniFileName);
 
   // 读取特定属性的值
   jsonHandler.getValue('GenshinInstallPath')
     .then((genshinPath) => {
-      log('INFO', __filename, genshinPath);
+      log('DEBUG', __filename, `jsonHandler.getValue('GenshinInstallPath')--> `, genshinPath);
       openYuanshen(genshinPath);
     })
     .catch((err) => {
@@ -123,8 +126,13 @@ ipcMain.on('start-genshin', (ev, arg) => {
           jsonHandler.update('GenshinInstallPath', INSTALLPATH);
           openYuanshen(INSTALLPATH);
         } else {
+          getWindow('main').restore();
           log('ERROR', __filename, 'GET GENSHIN INSTALL PATH NULL');
           openDialog2getYuanPath();
+          jsonHandler.getValue('GenshinInstallPath').then(INSTALLPATH => { openYuanshen(INSTALLPATH); }).catch(err => {
+            log('ERROR', __filename, 'TRY TO RESTART GENSHIN FAILED');
+          })
+
         }
       })
     });
@@ -136,6 +144,8 @@ function openYuanshen(exePath) {
       console.error(`无法打开程序: ${error.message}`);
       return;
     }
-    getWindow('main').minimize();
   });
+}
+module.exports={
+  openDialog2getYuanPath
 }
