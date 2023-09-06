@@ -29,5 +29,19 @@
   "modifyhelper0":"双击相应内容以修改,删除、修改账号完毕后务必",
   "modifyhelper1":"点击存档按钮保存.",
   "ClearReg":"原神登出(需管理员权限)",
-  "startgenshin":"原神启动！"
+  "startgenshin":"原神启动！",
+  "SignOutGenshinSuccessed":"注销成功！",
+  "SignOutGenshinFailed":"注销失败！",
+  "loginFailed":"账号或密码错误!",
+  "RESETPASSWORDWARNING":"警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
+  "RESETPASSWORDSUCCESSED":"重置密码成功",
+  "LoadUIDListFailed":"加载UID列表失败",
+  "PLSELECTUID":"请选择账号",
+  "ModifySuccessed":"修改成功",
+  "ModifyFailed":"修改失败",
+  "failed":"失败",
+  "successed":"成功",
+  "create":"创建",
+  "uid":"账号",
+  "copy":"复制"
 }

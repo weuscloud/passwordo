@@ -11,7 +11,7 @@ ipcMain.on("login-form-submission", (event, arg) => {
   if (!AccountManager.getInstance().checkPassword(password)) {
     sendMessage("login", "login-error", {
       success: false,
-      message: "账号或密码错误!",
+      message: "{loginfailed}",
     });
   } else {
     global.login = {

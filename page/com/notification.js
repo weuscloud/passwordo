@@ -19,8 +19,32 @@ function createContainer(inst) {
     document.body.appendChild(inst.container);
   }
 }
+function match(str, data) {
+  // 使用正则表达式匹配字符串中的 {} 内容
+  str=str.toLowerCase();
+  var matches = str.match(/\{([^{}]+)\}/g);
+
+  if (matches) {
+    // 遍历匹配到的 key
+    matches.forEach(function (match) {
+      // 提取 key，去除 {} 并去除前后空格
+      var key = match.replace(/[{}]/g, '').trim();
+
+      // 使用 key 从 data 对象中获取对应的 value
+      var value = data[key];
+
+      // 如果找到了对应的 value，将字符串中的 key 替换为 value
+      if (value !== undefined) {
+        str = str.replace(match, value);
+      } else {
+        str = str.replace(/\{([^{}]+)\}/g, key);
+      }
+    });
+  }
+  return str;
+}
 class Notification {
-  constructor() {}
+  constructor() { }
 
   static getInstance() {
     if (!Notification.instance) {
@@ -28,12 +52,11 @@ class Notification {
     }
     return Notification.instance;
   }
-
   show(message, type) {
     if (!this.container) {
       createContainer(this);
     }
-    this.container.innerText = message;
+    this.container.innerText = match(message, window.g_langData);
 
     switch (type) {
       case "warning":
@@ -61,7 +84,7 @@ class Notification {
     }
     const message = args.join(" ");
     this.container.innerText = "";
-    this.container.innerText += message;
+    this.container.innerText += match(message, window.g_langData);
     this.container.innerText += `\nuid:${uid}\n`;
 
     switch (type) {

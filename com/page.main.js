@@ -41,16 +41,16 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
   }
 });
 ipcMain.on("cleareg", (ev, arg) => {
-  sudo.exec('echo hello', options,
+  sudo.exec('NET SESSION', options,
     function (error, stdout, stderr) {
       if (error) {
-        log('ERROR', __filename, '注册表权限不足');
+        log('ERROR', __filename, '注册表权限不足',error);
         return;
       }
       deleteKey(keyPath).then(() => {
-        sendMessage("main", "cleareg-reply", { success: true, message: "删除成功" });
+        sendMessage("main", "cleareg-reply", { success: true, message: "{SignOutGenshinSuccessed}" });
       }).catch((ERR) => {
-        sendMessage("main", "cleareg-reply", { success: false, message: `删除失败:\n${ERR}` });
+        sendMessage("main", "cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
       });
     }
   );

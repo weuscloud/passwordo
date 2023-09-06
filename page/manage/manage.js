@@ -156,9 +156,9 @@ table.addEventListener(
 ipcRenderer.on("modify-account-reply", (event, arg) => {
   const { success, message, uid } = arg;
   if (success === true) {
-    Notification.getInstance().shoWithUid(uid, "success", "修改成功");
+    Notification.getInstance().shoWithUid(uid, "success", "{ModifySuccessed}");
   } else {
-    Notification.getInstance().shoWithUid(uid, "error", "修改失败");
+    Notification.getInstance().shoWithUid(uid, "error", "{ModifyFailed}");
   }
 });
 
@@ -166,9 +166,9 @@ ipcRenderer.on("modify-account-reply", (event, arg) => {
 ipcRenderer.on("delete-account-reply", (event, arg) => {
   const { success, uid } = arg;
   if (success === true)
-    Notification.getInstance().shoWithUid(uid, "success", "删除成功");
+    Notification.getInstance().shoWithUid(uid, "success", "{delete}{successed}");
   else {
-    Notification.getInstance().shoWithUid(uid, "success", "删除成功");
+    Notification.getInstance().shoWithUid(uid, "success", "{delete}{Failed}");
   }
 });
 table.addEventListener(
@@ -218,7 +218,7 @@ table.addEventListener(
 ipcRenderer.on("save-account-reply", (event, arg) => {
   const { success, message } = arg;
   if (success === true) {
-    Notification.getInstance().show("保存成功!", "success");
+    Notification.getInstance().show("{SaveDoc}{successed}", "success");
   } else {
     Notification.getInstance().show(message, "error");
   }
@@ -313,11 +313,11 @@ formOverlay.addEventListener("click", (event) => {
 ipcRenderer.on("create-account-reply", (event, arg) => {
   const { success, message, uid } = arg;
   if (success === true) {
-    Notification.getInstance().shoWithUid(uid, "success", "创建成功");
+    Notification.getInstance().shoWithUid(uid, "success", "{NewAccount}{create}{successed}");
     add(sortKey(arg));
     toggleModal();
   } else {
-    Notification.getInstance().shoWithUid(uid, "error", "创建失败", message);
+    Notification.getInstance().shoWithUid(uid, "error", "{NewAccount}{create}{failed}", message);
   }
 });
 
@@ -325,7 +325,7 @@ ipcRenderer.on("create-account-reply", (event, arg) => {
 ipcRenderer.on("import-account-reply", (e, arg) => {
   const { message, success, accounts } = arg;
   if (success) {
-    Notification.getInstance().show("导入成功", "success");
+    Notification.getInstance().show('{import}{successed}', "success");
     if (accounts instanceof Array) {
       let index = 0;
       const addRowAsync = () => {
@@ -338,7 +338,7 @@ ipcRenderer.on("import-account-reply", (e, arg) => {
       addRowAsync();
     }
   } else {
-    Notification.getInstance().show("导入失败m" + message, "error");
+    Notification.getInstance().show("{import}{failed}" + message, "error");
   }
 });
 ipcRenderer.send("query-account", "");

@@ -28,7 +28,7 @@ loginForm.addEventListener(
         target.hasClicked++;
       } else if (!target.hasClicked) {
         Notification.getInstance().show(
-          "警告:你正在重置密码,所有信息无法找回!\n确认请继续点击!",
+          "{RESETPASSWORDWARNING}",
           "warning"
         );
         target.hasClicked = 1;
@@ -39,10 +39,10 @@ loginForm.addEventListener(
 ipcRenderer.on("reset-password-reply", (e, a) => {
   const { success } = a;
   if (success) {
-    Notification.getInstance().show("重置成功!", "success");
+    Notification.getInstance().show("{RESETPASSWORDSUCCESSED}", "success");
     return;
   }
-  Notification.getInstance().show("重置失败!", "error");
+  Notification.getInstance().show("{RESETPASSWORDFAILED}", "error");
 });
 
 ipcRenderer.on("login-error", (event, arg) => {

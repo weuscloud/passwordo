@@ -72,9 +72,10 @@ class Translator {
 ipcRenderer.on("get-lang-data-reply", (e, arg) => {
   const { success, langData } = arg;
   if (success === true) {
-    window.g_langData = langData;
-    if (window._innerHtml)
-    document.body.innerHTML = window._innerHtml;
+    window.g_langData =  {};
+    for (const [key, value] of Object.entries(langData)) {
+      window.g_langData[key.toLowerCase()] = value;
+    }
     new Translator(window.g_langData).translatePage();
   }
 });

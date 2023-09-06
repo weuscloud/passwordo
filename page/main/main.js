@@ -5,11 +5,11 @@ const Translator = require("../com/Translator");
 
 function addItems(content) {
   if (!content instanceof Array) {
-    Notification.getInstance().show("Load failed", "error");
+    Notification.getInstance().show("{LoadUIDListFailed}", "error");
     return;
   }
   if (content.length == 0) {
-    Notification.getInstance().show("目前还没有账号！", "warning");
+    Notification.getInstance().show("{PLSELECTUID}", "warning");
     return;
   }
   //清空
@@ -109,7 +109,7 @@ function handleAccountClick() {
       isAccount: Looper.isAccount,
     });
   } else {
-    Notification.getInstance().show("请选择账号!", "warning");
+    Notification.getInstance().show("{PLSELECTUID}", "warning");
   }
 }
 
@@ -121,7 +121,7 @@ function handlePasswordClick() {
       isAccount: Looper.isAccount,
     });
   } else {
-    Notification.getInstance().show("请选择账号!", "warning");
+    Notification.getInstance().show("{PLSELECTUID}", "warning");
   }
 }
 
@@ -140,7 +140,7 @@ function handleClearRegClick() {
 
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
   const { success, isAccount, uid } = arg;
-  let message = `复制${isAccount ? "账号" : "密码"}${success ? "成功" : "失败"
+  let message = `{copy}${isAccount ? "{account}" : "{password}"}${success ? "{successed}" : "{failed}"
     }\nuid:${uid}`;
   if (success === true) {
     Notification.getInstance().show(message, "success");
