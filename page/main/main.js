@@ -69,7 +69,7 @@ menu0.addEventListener("click", debounce(handleMenuClick, 200));
 const menu1 = document.querySelector(".menu1");
 menu1.addEventListener("click", debounce(handleMenuClick, 200));
 
-const classToHandlerMap = {
+let classToHandlerMap = {
   "dropdown-item": handleDropdownItemClick,
   "account": handleAccountClick,
   "password": handlePasswordClick,
@@ -80,9 +80,15 @@ const classToHandlerMap = {
 };
 
 function handlerStartGenshin(event) {
-  ipcRenderer.send('start-genshin','');
+  disabledTarget('startgenshin');
+  disabledTargetAnimation('startgenshin');
+  ipcRenderer.send('start-genshin', '');
 }
-
+ipcRenderer.on('start-genshin-reply',(e,arg)=>{
+  const {success}=arg;
+  disabledTarget('startgenshin',!success);
+  disabledTargetAnimation('startgenshin',!success);
+})
 function handleMenuClick(event) {
   const target = event.target;
 
@@ -135,9 +141,39 @@ function handleManageClick() {
 }
 
 function handleClearRegClick() {
+  disabledTarget('cleareg');
+  disabledTargetAnimation('cleareg');
   ipcRenderer.send("cleareg", "");
 }
+function disabledTarget(targetClassName,disabled = true) {
+  if(!classToHandlerMap.hasOwnProperty(targetClassName)){
+    throw 'ill protocol'
+    return
+  };
+  
+  const sName='_'+targetClassName;
+  if (disabled) {
 
+    classToHandlerMap[sName]=classToHandlerMap[targetClassName];
+    classToHandlerMap[targetClassName]=undefined;
+    
+    return;
+  }
+  classToHandlerMap[targetClassName] = classToHandlerMap[sName];
+}
+function disabledTargetAnimation(targetClassName, disabled = true) {
+  const targetDiv=document.querySelector(`.${targetClassName}`);
+  if (disabled) {
+    if(!targetDiv._bgColor)targetDiv._bgColor=targetDiv.style.backgroundColor;
+
+    targetDiv.style.transition=` background-color 1s cubic-bezier(0.25, 1, 0.5, 1)`;
+    targetDiv.style.backgroundColor=`#ccc`;
+    return;
+  }
+  targetDiv.style.backgroundColor=targetDiv._bgColor;
+
+
+}
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {
   const { success, isAccount, uid } = arg;
   let message = `{copy}${isAccount ? "{account}" : "{password}"}${success ? "{successed}" : "{failed}"
@@ -160,4 +196,6 @@ ipcRenderer.on("query-uid-reply", (event, arg) => {
 ipcRenderer.on("cleareg-reply", (e, arg) => {
   const { success, message } = arg;
   Notification.getInstance().show(message, success ? "success" : "error");
+  disabledTarget('cleareg',false); 
+  disabledTargetAnimation('cleareg',false);
 })

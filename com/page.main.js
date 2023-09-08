@@ -44,20 +44,22 @@ ipcMain.on("cleareg", (ev, arg) => {
   sudo.exec('NET SESSION', options,
     function (error, stdout, stderr) {
       if (error) {
-        log('ERROR', __filename, '注册表权限不足',error);
+        log('ERROR', __filename, '未授权', error);
+        ev.sender.send("cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
         return;
       }
       deleteKey(keyPath).then(() => {
-        sendMessage("main", "cleareg-reply", { success: true, message: "{SignOutGenshinSuccessed}" });
+        ev.sender.send("cleareg-reply", { success: true, message: "{SignOutGenshinSuccessed}" });
       }).catch((ERR) => {
-        sendMessage("main", "cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
+        log('ERROR', __filename, '注册表权限不足', error);
+        ev.sender.send("cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
       });
     }
   );
 })
 
 
-function getYuanInstallPath() {
+function getGenshinPathByReg() {
   return new Promise((resolve, reject) => {
     // 要查找的应用程序名称
     const targetApplication = 'Genshin Impact';
@@ -83,7 +85,11 @@ function getYuanInstallPath() {
 
           const appName = InstallPath.substring(InstallPath.lastIndexOf('\\') + 1);
           if (appName.trim() === targetApplication.trim()) {
-            resolve(`${InstallPath.trim()}\\Genshin Impact Game\\yuanshen.exe`);
+            const exePath = `${InstallPath.trim()}\\Genshin Impact Game\\yuanshen.exe`;
+            log('INFO', __filename, `从注册表更新原神安装路径:`, exePath);
+            const jsonHandler = new JsonFileHandler(iniFileName);
+            jsonHandler.update('GenshinInstallPath', exePath);
+            resolve(exePath);
           }
         }
       });
@@ -93,57 +99,69 @@ function getYuanInstallPath() {
     });
   });
 }
-function openDialog2getYuanPath() {
-  // 如果未找到应用程序的安装路径，弹出文件选择对话框
-  dialog.showOpenDialog({
-    title: '选择 Genshin Impact EXE 文件',
-    properties: ['openFile'],
-    filters: [{ name: 'EXE 文件', extensions: ['exe'] }],
-  }).then(result => {
+// 执行命令来打开用户选择的 EXE 文件
+async function getGenshinPathByDialog() {
+  try {
+    const result = await
+      dialog.showOpenDialog({
+        title: '选择 Genshin Impact EXE 文件',
+        properties: ['openFile'],
+        filters: [{ name: 'EXE 文件', extensions: ['exe'] }],
+      });
     if (!result.canceled && result.filePaths.length > 0) {
       const exePath = result.filePaths[0];
-      // 执行命令来打开用户选择的 EXE 文件
+
+      log('INFO', __filename, `用户选择原神安装路径:`, exePath);
       const jsonHandler = new JsonFileHandler(iniFileName);
       jsonHandler.update('GenshinInstallPath', exePath);
-      log('INFO', __filename, `更新原神安装路径:`, exePath);
-    } else {
+      return exePath;
+
+    }else{
+      return ;
     }
-  }).catch(error => {
-    console.error(`发生错误: ${error.message}`);
-  });
+  } catch (error) {
+
+  }
 }
-
-ipcMain.on('start-genshin', (ev, arg) => {
-  getWindow('main').minimize();
-  getYuanInstallPath().then(INSTALLPATH => {
-    if (INSTALLPATH) {
-      const jsonHandler = new JsonFileHandler(iniFileName);
-      jsonHandler.update('GenshinInstallPath', INSTALLPATH);
-      openYuanshen();
-    } else {
-      getWindow('main').restore();
-      openDialog2getYuanPath();
-      openYuanshen();
-    }
-  })
-
-})
-function openYuanshen() {
-  let genshinPath
+async function getGenshinPath() {
   try {
     const jsonHandler = new JsonFileHandler(iniFileName);
-    genshinPath = jsonHandler.getValue('GenshinInstallPath');
+    return jsonHandler.getValue('GenshinInstallPath');
   } catch (error) {
-    log('ERROR', __filename, '原神安装路径为空！');
-    return;
+    log('ERROR', __filename, `从配置读取路径原神安装路径失败`, error);
+    try {
+      const registryPath = await getGenshinPathByReg();
+      if (registryPath) {
+        const jsonHandler = new JsonFileHandler(iniFileName);
+        jsonHandler.update('GenshinInstallPath', registryPath);
+        return registryPath;
+      } else {
+        log('ERROR', __filename, `从注册表读取路径原神安装路径：为空`);
+        return await getGenshinPathByDialog();
+      }
+    } catch (error) {
+      log('ERROR', __filename, `从注册表读取路径原神安装路径失败`, error);
+      return await getGenshinPathByDialog();
+    }
   }
+}
+ipcMain.on('start-genshin', async (ev, arg) => {
+
+  let genshinPath = await getGenshinPath();
+  //启动原神
+  if (genshinPath) {
+    openYuanshen(genshinPath)
+  }
+  ev.sender.send('start-genshin-reply', { success: true })
+})
+function openYuanshen(genshinPath) {
   exec(`start "" "${genshinPath}"`, (error, stdout, stderr) => {
     if (error) {
-      log('ERROR', __filename, `无法打开程序: 用户取消!`);
+      log('INFO', __filename, `无法打开程序: 用户取消!`);
       return;
     }
   });
 }
 module.exports = {
-  openDialog2getYuanPath
+  getGenshinPathByDialog
 }

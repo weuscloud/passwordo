@@ -1,6 +1,6 @@
 const { Menu, app } = require('electron');
 const { SingleWindow, getWindow } = require("./WindowMgr");
-const { openDialog2getYuanPath } = require('./page.main');
+const { getGenshinPathByDialog } = require('./page.main');
 
 const template = [
   {
@@ -38,10 +38,10 @@ const template = [
     label: 'Settings',
     submenu: [
       {
-        label: 'RESET GENSHIN PATH',
+        label: 'FIND GENSHIN PATH',
         type: 'normal',
         click: function () {
-          openDialog2getYuanPath()
+          getGenshinPathByDialog()
         }
       }
     ]
