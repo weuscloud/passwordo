@@ -1,6 +1,8 @@
 const { Menu, app } = require('electron');
 const { SingleWindow, getWindow } = require("./WindowMgr");
 const { getGenshinPathByDialog } = require('./page.main');
+const { exec } = require('child_process');
+const { iniFileName } = require('./file');
 
 const template = [
   {
@@ -38,10 +40,27 @@ const template = [
     label: 'Settings',
     submenu: [
       {
-        label: 'FIND GENSHIN PATH',
+        label: 'Forward game path',
         type: 'normal',
         click: function () {
           getGenshinPathByDialog()
+        }
+      },
+      {
+        label: 'Configure preference',
+        type: 'normal',
+        click: function () {
+          // 使用记事本打开文件
+          exec(`notepad.exe "${iniFileName}"`, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error opening file: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.error(`Error output: ${stderr}`);
+              return;
+            }
+          });
         }
       }
     ]

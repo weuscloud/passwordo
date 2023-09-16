@@ -48,16 +48,15 @@ class JsonFileHandler {
   update(propertyName, value) {
     propertyName=propertyName.toLowerCase();
     this._jsonData[propertyName] = value;
-    this.write();
   }
-
   // 读取特定属性的值
   getValue(propertyName) {
     propertyName=propertyName.toLowerCase();
     if (this._jsonData.hasOwnProperty(propertyName)) {
       return this._jsonData[propertyName];
     } else{
-      throw `属性${propertyName}不存在`;
+      log('ERROR',__filename,`属性${propertyName}不存在`);
+      return;
     }
   }
   getKeys(){

@@ -14,6 +14,7 @@ const tbFormat = {
 
 function add(other) {
   if (typeof other !== "object") return;
+
   // 创建新的行元素
   let row = document.createElement("div");
   row.classList.add("row");
@@ -24,12 +25,10 @@ function add(other) {
     col.classList.add("col");
     col.classList.add(key);
     if (typeof other[key] === "string") {
-      if (key === "password") {
+      if (key === "password") {//需要保密的列
         col.textContent = "••••••••••••";
         col.trueText = other[key];
-      } else if (key === "action" && typeof other[key] === "string") {
-        const translator = new Translator(window.g_langData);
-
+      } else if (key === "action" && typeof other[key] === "string") {//操作列
         let ops = other[key].split(",");
         ops.forEach((item) => {
           let submitButton = document.createElement("button");
@@ -37,10 +36,11 @@ function add(other) {
           submitButton.textContent = `{${item}}`;
           col.appendChild(submitButton);
           if (window.g_langData) {
+            const translator = new Translator(window.g_langData);
             translator.translateElement(submitButton);
           }
         });
-      } else {
+      } else {//普通列
         col.textContent = other[key];
       }
     }
@@ -296,7 +296,7 @@ table.addEventListener(
       target.getAttribute("type") === "new"
     ) {
       //打开modal
-      const randomNum = Math.floor(Math.random() * 900000000 + 100000000);
+      const randomNum = Math.floor(Math.random() * 9e8 + 1e8);
       formContainer.querySelector("#uid").value = randomNum;
       toggleModal();
     } else if (target.getAttribute("type") === "import") {

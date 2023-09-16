@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 const { debounce } = require("../../com/throttle");
 const Notification = require("../com/notification");
-const Translator = require("../com/Translator");
+require("../com/Translator");
 
 function addItems(content) {
   if (!content instanceof Array) {
@@ -77,8 +77,17 @@ let classToHandlerMap = {
   "manage": handleManageClick,
   "cleareg": handleClearRegClick,
   "startgenshin": handlerStartGenshin,
+  "cdkey":handlerCopyCdkey,
 };
-
+function handlerCopyCdkey(){
+  if(!window._ckeySeq)window._ckeySeq=1
+  ipcRenderer.send('copy-cdkey', `${window._ckeySeq++}`);
+  if(window._ckeySeq==4)window._ckeySeq=1
+}
+ipcRenderer.on('copy-cdkey-reply',(e,arg)=>{
+  const {success}=arg;
+  Notification.getInstance().show(`{cdkey}{${success?'SUCCESSED':'FAILED'}}`,success?'success': "warning");
+})
 function handlerStartGenshin(event) {
   disabledTarget('startgenshin');
   disabledTargetAnimation('startgenshin');
@@ -171,7 +180,7 @@ function disabledTargetAnimation(targetClassName, disabled = true) {
     return;
   }
   targetDiv.style.backgroundColor=targetDiv._bgColor;
-
+  targetDiv.style.transition=``;
 
 }
 ipcRenderer.on("clipboard-copy-reply", (event, arg) => {

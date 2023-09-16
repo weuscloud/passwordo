@@ -101,13 +101,3 @@ body {
 .cleareg {
   background-color: #ff4d4f;
 }
-.overlay {
-  background-color: rgba(0, 0, 0, 0.6);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  z-index: 2;
-  transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
-}

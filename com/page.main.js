@@ -2,25 +2,27 @@ const { ipcMain, dialog, clipboard } = require("electron");
 const { sendMessage, getWindow } = require("./WindowMgr");
 const AccountManager = require("./AccountManager");
 const fs = require('fs');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const JsonFileHandler = require('./JsonFileHandler')
 const { iniFileName } = require('./file');
 const log = require("./log");
 const keyPath = `HKEY_CURRENT_USER\\Software\\miHoYo\\原神`
-const sudo = require('sudo-prompt');
-const options = {
-  name: 'Electron'
-};
-function deleteKey(keypath) {
-  return new Promise((R, J) => {
-    try {
-      const res = exec(`reg delete ${keypath} /f`);
-      R(res)
-    } catch (error) {
-      J(error)
-    }
-  })
-}
+
+ipcMain.on('copy-cdkey', (e, a) => {
+  const jsonHandler = new JsonFileHandler(iniFileName);
+  const key = jsonHandler.getValue(`cdkey${a}`);
+  if (key) {
+    clipboard.writeText(key);
+    e.sender.send('copy-cdkey-reply',{success:true});
+  } else {
+    log("ERROR",__filename,`复制cdkey${a}失败`)
+    e.sender.send('copy-cdkey-reply',{success:false});
+    jsonHandler.update(`cdkey${a}`, '')
+    jsonHandler.write()
+  }
+
+})
+
 ipcMain.on("query-uid", (e, a) => {
   sendMessage(
     "main",
@@ -41,24 +43,32 @@ ipcMain.on("clipboard-copy", (ev, arg) => {
   }
 });
 ipcMain.on("cleareg", (ev, arg) => {
-  sudo.exec('NET SESSION', options,
-    function (error, stdout, stderr) {
-      if (error) {
-        log('ERROR', __filename, '未授权', error);
-        ev.sender.send("cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
-        return;
-      }
-      deleteKey(keyPath).then(() => {
-        ev.sender.send("cleareg-reply", { success: true, message: "{SignOutGenshinSuccessed}" });
-      }).catch((ERR) => {
-        log('ERROR', __filename, '注册表权限不足', error);
-        ev.sender.send("cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
-      });
-    }
-  );
+  if (deleteKey(keyPath)) {
+    ev.sender.send("cleareg-reply", { success: true, message: `{SignOutGenshinSuccessed}\n` });
+    return;
+  }
+  ev.sender.send("cleareg-reply", { success: false, message: `{SignOutGenshinFailed}\n` });
 })
+ipcMain.on('start-genshin', async (ev, arg) => {
 
-
+  let genshinPath = await getGenshinPath();
+  //启动原神
+  if (genshinPath) {
+    openYuanshen(genshinPath)
+  }
+  ev.sender.send('start-genshin-reply', { success: true })
+})
+function deleteKey(keypath) {
+  try {
+    const command = 'reg';
+    const args = ['delete', keypath, '/f'];
+    const child = spawn(command, args);
+    return true;
+  } catch (error) {
+    log('ERROR', __filename, '注册表权限不足', error);
+    return false;
+  }
+}
 function getGenshinPathByReg() {
   return new Promise((resolve, reject) => {
     // 要查找的应用程序名称
@@ -89,6 +99,7 @@ function getGenshinPathByReg() {
             log('INFO', __filename, `从注册表更新原神安装路径:`, exePath);
             const jsonHandler = new JsonFileHandler(iniFileName);
             jsonHandler.update('GenshinInstallPath', exePath);
+            jsonHandler.write();
             resolve(exePath);
           }
         }
@@ -114,46 +125,38 @@ async function getGenshinPathByDialog() {
       log('INFO', __filename, `用户选择原神安装路径:`, exePath);
       const jsonHandler = new JsonFileHandler(iniFileName);
       jsonHandler.update('GenshinInstallPath', exePath);
+      jsonHandler.write();
       return exePath;
 
-    }else{
-      return ;
+    } else {
+      return;
     }
   } catch (error) {
 
   }
 }
 async function getGenshinPath() {
+  const jsonHandler = new JsonFileHandler(iniFileName);
+  let instPath = jsonHandler.getValue('GenshinInstallPath');
+  if (instPath) return instPath;
+  log('ERROR', __filename, `从配置读取路径原神安装路径失败`, error);
   try {
-    const jsonHandler = new JsonFileHandler(iniFileName);
-    return jsonHandler.getValue('GenshinInstallPath');
-  } catch (error) {
-    log('ERROR', __filename, `从配置读取路径原神安装路径失败`, error);
-    try {
-      const registryPath = await getGenshinPathByReg();
-      if (registryPath) {
-        const jsonHandler = new JsonFileHandler(iniFileName);
-        jsonHandler.update('GenshinInstallPath', registryPath);
-        return registryPath;
-      } else {
-        log('ERROR', __filename, `从注册表读取路径原神安装路径：为空`);
-        return await getGenshinPathByDialog();
-      }
-    } catch (error) {
-      log('ERROR', __filename, `从注册表读取路径原神安装路径失败`, error);
+    const registryPath = await getGenshinPathByReg();
+    if (registryPath) {
+      const jsonHandler = new JsonFileHandler(iniFileName);
+      jsonHandler.update('GenshinInstallPath', registryPath);
+      jsonHandler.write();
+      return registryPath;
+    } else {
+      log('ERROR', __filename, `从注册表读取路径原神安装路径：为空`);
       return await getGenshinPathByDialog();
     }
+  } catch (error) {
+    log('ERROR', __filename, `从注册表读取路径原神安装路径失败`, error);
+    return await getGenshinPathByDialog();
   }
 }
-ipcMain.on('start-genshin', async (ev, arg) => {
 
-  let genshinPath = await getGenshinPath();
-  //启动原神
-  if (genshinPath) {
-    openYuanshen(genshinPath)
-  }
-  ev.sender.send('start-genshin-reply', { success: true })
-})
 function openYuanshen(genshinPath) {
   exec(`start "" "${genshinPath}"`, (error, stdout, stderr) => {
     if (error) {
