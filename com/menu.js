@@ -2,8 +2,9 @@ const { Menu, app } = require('electron');
 const { SingleWindow, getWindow } = require("./WindowMgr");
 const { getGenshinPathByDialog } = require('./page.main');
 const { exec } = require('child_process');
-const { iniFileName } = require('./file');
-
+const { iniFileName, encryptedFileName, getBackupFileName } = require('./file');
+const log = require('./log');
+const path = require('path');
 const template = [
   {
     label: 'Language',
@@ -52,6 +53,43 @@ const template = [
         click: function () {
           // 使用记事本打开文件
           exec(`notepad.exe "${iniFileName}"`, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error opening file: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.error(`Error output: ${stderr}`);
+              return;
+            }
+          });
+        }
+      },
+      {
+        label: 'Backup accounts',
+        type: 'normal',
+        click: function () {
+          // 要复制的源文件和目标文件的路径
+          const sourceFile = encryptedFileName;
+          const targetFile = getBackupFileName();
+
+          // 根据操作系统选择适当的复制命令
+          const copyCommand = process.platform === 'win32' ? `copy ${sourceFile} ${targetFile}` : `cp ${sourceFile} ${targetFile}`;
+
+          // 执行复制命令
+          exec(copyCommand, (error, stdout, stderr) => {
+            if (error) {
+              log('ERROR', __filename, `复制文件时出错: ${error}`);
+              return;
+            }
+            log('INFO', __filename, `文件已成功复制: ${sourceFile} -> ${targetFile}`);
+          });
+        }
+      },
+      {
+        label: 'Open workdir',
+        type: 'normal',
+        click: function () {
+          exec(`explorer.exe "${path.dirname(iniFileName)}"`, (error, stdout, stderr) => {
             if (error) {
               console.error(`Error opening file: ${error.message}`);
               return;

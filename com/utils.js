@@ -1,10 +1,12 @@
 const { dialog } = require("electron");
 const log = require("./log");
+const path = require('path');
+const { encryptedFileName } = require('./file');
 function selectFile() {
   // 打开文件选择框
   const result = dialog.showOpenDialogSync({
     properties: ["openFile"],
-    filters: [{ name: "AES256G files", extensions: ["aes256g"] }],
+    filters: [{ name: "AES256G files", extensions: [`${path.extname(encryptedFileName).replace('.','')}`] }],
   });
 
   if (result && result.length > 0) {

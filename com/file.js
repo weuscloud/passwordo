@@ -38,10 +38,10 @@ async function main() {
     }
   }
 }
-const encryptedFileName = path.join(app.getPath("userData"), "passwordo.accounts");
+const encryptedFileName = path.join(app.getPath("userData"), "passwordo.aes256g");
 const iniFileName = path.join(app.getPath("userData"), "user.json");
 const logFileName = path.join(app.getPath('userData'), `passwordo.log`);
-
+const getBackupFileName =()=>{const unixTimestampInSeconds = Math.floor(Date.now() / 1000);return `${path.dirname(iniFileName)}\\bak.${unixTimestampInSeconds}.${path.basename(encryptedFileName)}`};
 const filesToCheck = [
   { path: encryptedFileName },
   { path: iniFileName},
@@ -59,4 +59,5 @@ if (!global.fileInitialized) {
 module.exports = {
   encryptedFileName,
   iniFileName,
+  getBackupFileName
 }

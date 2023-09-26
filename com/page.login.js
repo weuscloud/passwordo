@@ -4,23 +4,23 @@ const { sendMessage, SingleWindow } = require("./WindowMgr");
 const crypto = require("crypto");
 const path = require("path");
 const { selectFile } = require("./utils");
-const log = require("./log");
+
 // 接收登录请求
 ipcMain.on("login-form-submission", (event, arg) => {
   const { account, password } = arg;
-  if (!AccountManager.getInstance().checkPassword(password)) {
-    sendMessage("login", "login-error", {
-      success: false,
-      message: "{loginfailed}",
-    });
-  } else {
-    global.login = {
+  if (AccountManager.getInstance().checkPassword(password)) {
+    global.login = { 
       passwordHash: crypto.createHash("sha256").update(password),
     };
     //跳转至主窗口
     AccountManager.getInstance().readFromFile();
     SingleWindow("main");
+    return;
   }
+  sendMessage("login", "login-error", {
+    success: false,
+    message: "{loginfailed}",
+  });
 });
 
 //重置账号

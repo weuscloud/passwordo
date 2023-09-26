@@ -82,11 +82,11 @@ let classToHandlerMap = {
 function handlerCopyCdkey(){
   if(!window._ckeySeq)window._ckeySeq=1
   ipcRenderer.send('copy-cdkey', `${window._ckeySeq++}`);
-  if(window._ckeySeq==4)window._ckeySeq=1
 }
 ipcRenderer.on('copy-cdkey-reply',(e,arg)=>{
   const {success}=arg;
   Notification.getInstance().show(`{cdkey}{${success?'SUCCESSED':'FAILED'}}`,success?'success': "warning");
+  if(!success)window._ckeySeq=undefined
 })
 function handlerStartGenshin(event) {
   disabledTarget('startgenshin');
