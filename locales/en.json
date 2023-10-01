@@ -43,5 +43,15 @@
   "successed": " Successed",
   "create": " Create ",
   "uid": " UID ",
-  "copy": " Copy "
+  "copy": " Copy ",
+  "cdkey": "",
+  "FGP": "Forward game path",
+  "CP": "Configure preference",
+  "BA": "Backup accounts",
+  "OW": "Open workdir",
+  "DBG": "Debug",
+  "LANG": "Language",
+  "SET": "Settings",
+  "CON":"Cconsole panel",
+  "RELOAD":"Reload page"
 }

@@ -1,17 +1,22 @@
 const { Menu, app } = require('electron');
-const { SingleWindow, getWindow } = require("./WindowMgr");
+const { SingleWindow,sendMessage, getWindow } = require("./WindowMgr");
 const { getGenshinPathByDialog } = require('./page.main');
 const { exec } = require('child_process');
 const { iniFileName, encryptedFileName, getBackupFileName } = require('./file');
 const log = require('./log');
 const path = require('path');
-const template = [
+const { LangObj } = require('./LangLoader');
+Menu.setApplicationMenu(null);
+// 定义一个包含菜单项标识符的数组
+const menuItemsToUpdate = ['FGP', 'CP', 'BA', 'OW', 'DBG','LANG','SET','CON','RELOAD'];
+let template = [
   {
     label: 'Language',
+    id:"LANG",
     submenu: [
       {
         label: 'English',
-        type: 'radio',
+        type: 'normal',
         checked: false,
         click: function () {
           // handle English click
@@ -21,28 +26,24 @@ const template = [
       },
       {
         label: '简体中文',
-        type: 'radio',
+        type: 'normal',
         checked: false,
         click: function () {
           // handle Chinese click
           global._lang = 'zh-CN'
           SingleWindow(global.windowName);
         }
-      },
-      {
-        label: 'Default',
-        type: 'radio',
-        checked: true,
-        enabled: false, // 将该选项禁用
       }
     ]
   },
   {
     label: 'Settings',
+    id:"SET",
     submenu: [
       {
         label: 'Forward game path',
         type: 'normal',
+        id: 'FGP',
         click: function () {
           getGenshinPathByDialog()
         }
@@ -50,6 +51,7 @@ const template = [
       {
         label: 'Configure preference',
         type: 'normal',
+        id: "CP",
         click: function () {
           // 使用记事本打开文件
           exec(`notepad.exe "${iniFileName}"`, (error, stdout, stderr) => {
@@ -67,6 +69,7 @@ const template = [
       {
         label: 'Backup accounts',
         type: 'normal',
+        id: "BA",
         click: function () {
           // 要复制的源文件和目标文件的路径
           const sourceFile = encryptedFileName;
@@ -88,6 +91,7 @@ const template = [
       {
         label: 'Open workdir',
         type: 'normal',
+        id: "OW",
         click: function () {
           exec(`explorer.exe "${path.dirname(iniFileName)}"`, (error, stdout, stderr) => {
             if (error) {
@@ -105,19 +109,77 @@ const template = [
   },
   {
     label: 'Debug',
-    click: function () {
-      // handle about click
-      getWindow(global.windowName).webContents.toggleDevTools();
-    }
+    id: "DBG",
+    submenu:[
+      {
+        label: 'CONSOLE',
+        id: "CON",
+        click: function () {
+          // handle about click
+          getWindow(global.windowName).webContents.toggleDevTools();
+        }
+      },
+      {
+        label: 'Reload',
+        id: "RELOAD",
+        click: function () {
+          // handle about click
+          sendMessage(global.windowName,'reload',true);
+         
+        }
+      }
+    ]
   }
 ];
+// 递归函数来更新label属性
 
-const menu = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(menu);
 
-app.on('activate', function () {
-  Menu.setApplicationMenu(menu);
-});
-module.exports = {
-  menu
+
+function updateMenuTextAll(langData) {
+  if (!langData) return;
+  const obj = langData;
+
+  //匹配翻译对象
+  const labelUpdates  = {};
+  menuItemsToUpdate.forEach(key => {
+    if (obj.hasOwnProperty(key)) {
+      labelUpdates [key] = obj[key];
+    }
+  });
+  updateLabelRecursive(template,labelUpdates);
+  global._menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(global._menu);
 }
+function updateLabelRecursive(menuItems, labelUpdates) {
+  for (const menuItem of menuItems) {
+    if (menuItem.submenu) {
+      // 如果menuItem有子菜单，递归调用此函数来处理子菜单
+      updateLabelRecursive(menuItem.submenu, labelUpdates);
+    }
+    if (labelUpdates[menuItem.id]) {
+      // 如果存在与id匹配的更新，更新label属性
+      menuItem.label = labelUpdates[menuItem.id];
+    }
+  }
+}
+
+// 使用 Object.defineProperty 来监视 _lang
+Object.defineProperty(global, '_lang', {
+  get() {
+    return this._langValue;
+  },
+  set(newLang) {
+    // 在语言发生变化时触发自定义操作
+    console.log(`Language changed to ${newLang}`);
+    // 可以在这里执行其他操作，例如加载新的语言资源等
+    if (LangObj[newLang]) {
+      updateMenuTextAll(LangObj[newLang])
+    } else {
+      log("ERROR", __filename, "语言匹配失败", newLang);
+    }
+    // 更新 _langValue
+    this._langValue = newLang;
+  },
+  enumerable: true, // 让 _lang 可枚举
+  configurable: true, // 让 _lang 可配置
+});

@@ -79,5 +79,8 @@ ipcRenderer.on("get-lang-data-reply", (e, arg) => {
     new Translator(window.g_langData).translatePage();
   }
 });
+ipcRenderer.on("reload",(e,a)=>{
+  location.reload();
+})
 ipcRenderer.send("get-lang-data", { lang: navigator.language });
 module.exports = Translator;

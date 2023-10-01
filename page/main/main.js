@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 const { debounce } = require("../../com/throttle");
 const Notification = require("../com/notification");
-require("../com/Translator");
+const Translator = require("../com/Translator");
 
 function addItems(content) {
   if (!content instanceof Array) {

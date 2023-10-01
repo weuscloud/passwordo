@@ -14,3 +14,6 @@ ipcMain.on("get-lang-data", (event, arg) => {
     success: true,
   });
 });
+module.exports={
+  LangObj
+}
