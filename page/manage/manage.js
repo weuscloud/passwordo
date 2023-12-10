@@ -51,7 +51,7 @@ function add(other) {
 }
 function addHeader(obj) {
   let row = document.createElement("div");
-  row.classList.add("row", "header");
+  row.classList.add("row",'headerline', "header");
 
   Object.keys(obj).forEach((key) => {
     let col = document.createElement("div");
@@ -248,10 +248,18 @@ ipcRenderer.on("query-account-reply", (event, arg) => {
     line.parentNode.removeChild(line);
   });
   const data = arg;
+  let index=0;
   if (data instanceof Array) {
     for (const d of data) {
       add(sortKey(d));
+      index++;
     }
+    let ele= document.querySelector('.headerline').firstChild;
+      if(ele){
+        ele.innerHTML=`(${index})${ele.innerHTML}`;
+      }else{
+        console.log('index=',index);
+      }
   }
 });
 

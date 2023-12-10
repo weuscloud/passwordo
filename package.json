@@ -1,7 +1,7 @@
 {
   "name": "passwordo",
-  "version": "1.4.1",
-  "description": "",
+  "version": "1.4.2",
+  "description": "password management software for genshin impact",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

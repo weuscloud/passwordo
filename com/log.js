@@ -16,6 +16,7 @@ function getCurrentTimestamp() {
 }
 //INFO,WARNING,DEBUG,ERROR,FATAL
 function log(level, module,... args) {
+  module=path.basename(module);
   const message = args.join(' ');
   const validLevels = ['INFO', 'WARNING', 'DEBUG', 'ERROR', 'FATAL'];
   if (!validLevels.includes(level)) {
